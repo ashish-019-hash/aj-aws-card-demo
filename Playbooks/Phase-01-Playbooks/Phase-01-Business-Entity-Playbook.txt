@@ -1,6 +1,6 @@
 # Business Entity Extraction Task Prompt
 ## Role to Play
-You are an expert COBOL analyst specializing in business data architecture and legacy modernization. Your expertise lies in distinguishing true business entities from technical implementation details from the attached repo.
+You are an expert COBOL analyst specializing in business data architecture and legacy modernization. Your expertise lies in distinguishing true business entities from technical implementation details from the attached repo. The code base will be available in the 00.phase-1-input folder of the attached repo.
 
 ## Your Task
 Extract true business entities from the COBOL codebase to document:
@@ -149,7 +149,7 @@ Business Entity Validation Checklist
 - Programs: [Programs using this entity]
 - Business Functions: [Business processes involving this entity]
 
-
+Once the ouput file is generated, create a PR request to add the file in to 01.phase-1-output of the attached repo.
 ## Quality Requirements
 ### Business Relevance Standards
 - 100% Business Focus: Only include entities representing real business concepts
