@@ -1,0 +1,125 @@
+# Business Rules Extraction Playbook (Concise)
+
+## Purpose
+Extract **true business rules** from legacy code from the attached repo - the calculations, decisions, and logic that represent real business knowledge, not technical implementation.
+
+## Quick Decision Guide
+```
+Found calculation or logic?
+↓
+Business amounts/rates/decisions? → YES → Complex logic? → YES → Business user cares? → YES → INCLUDE
+                                 ↓ NO                    ↓ NO                      ↓ NO
+                                EXCLUDE               EXCLUDE                   EXCLUDE
+```
+
+## What to INCLUDE ✅
+**Business Logic** - Would exist in any system:
+- **Calculations**: Interest rates, fees, balances, percentages
+- **Decisions**: Approval criteria, eligibility rules, thresholds
+- **Formulas**: Business-specific mathematical operations
+- **Conditions**: Business scenarios and branching logic
+
+**Examples**:
+```cobol
+INTEREST = BALANCE * RATE / 1200          ← Business calculation
+IF CREDIT-LIMIT < NEW-BALANCE THEN REJECT ← Business decision
+```
+
+## What to EXCLUDE ❌
+**Technical Logic** - System implementation details:
+- **Data Conversion**: Format changes, type conversions
+- **Validation**: Field checks, required field validation
+- **System Operations**: File I/O, screen handling, error formatting
+- **Housekeeping**: ID generation, counters, timestamps
+
+**Examples**:
+```cobol
+NUMERIC-AMT = FUNCTION NUMVAL-C(SCREEN-AMT) ← Data conversion
+IF CUSTOMER-NAME = SPACES THEN ERROR        ← Input validation
+NEXT-ID = CURRENT-ID + 1                    ← System housekeeping
+```
+
+## 3-Phase Method
+**Use DeepWiki as starting point to understand application overview
+
+### Phase 1: Discovery
+Once you got the overview for every COBOL code in the repo
+1. **Understand it thoroughly in context with the overview 
+2. **Find business programs** - Look for calculation, processing, decision logic
+3. **Source code is truth** - Ignore documentation conflicts
+
+### Phase 2: Analysis
+**Search for**:
+- Mathematical operations (+, -, *, /, percentages)
+- Business variables (RATE, BALANCE, LIMIT, AMOUNT)
+- Conditional logic (IF/WHEN with business meaning)
+- Threshold comparisons
+
+### Phase 3: Validation
+**Ask for each rule**:
+1. Would a business user care about this?
+2. Would this exist in any system implementation?
+3. Does it affect business outcomes?
+4. Is it more than simple data movement?
+
+## Documentation Template
+```markdown
+### RULE-[TYPE]-[###]: [Rule Name]
+
+**Description**: [What this rule does in business terms]
+
+**Source**: [Program, lines ###-###]
+
+**Logic**: [Business calculation or decision]
+
+**Variables**:
+- Input: [Business data used]
+- Output: [Business result]
+
+**Impact**: [How this affects business operations]
+```
+
+## Rule Types
+- **CALC**: Mathematical calculations (rates, fees, balances)
+- **DECISION**: Approval/rejection logic
+- **THRESHOLD**: Limit-based decisions
+- **AGGREGATION**: Totals, averages, accumulations
+
+## Quality Checks
+**Red Flags** (likely NOT business rules):
+- Data format conversions
+- Sequential ID generation
+- Empty field checks
+- Screen positioning
+- Error message formatting
+- Loop counters
+
+**Green Flags** (likely business rules):
+- Rate applications
+- Balance calculations
+- Approval criteria
+- Business thresholds
+- Fee computations
+
+## Success Metrics
+- **Density**: 1-5 rules per 1000 lines of business code
+- **Clarity**: Business users can understand each rule
+- **Relevance**: >90% of rules are business-meaningful
+- **Completeness**: All significant business logic captured
+
+## Common Mistakes
+1. **Including validation as business rules** → Focus on what happens AFTER validation
+2. **Technical calculations** → Ask "Would business care about this?"
+3. **Too granular** → Group related logic into cohesive rules
+4. **Missing complex logic** → Look for multi-step business processes
+
+## Key Principle
+**If a business user wouldn't care about the logic, it's probably technical implementation, not a business rule.**
+
+---
+
+## Deliverables
+1. **Business Rules Catalog** - Documented rules using template
+2. **Business Glossary** - Key terms and concepts
+
+**Remember**: Code is the source of truth. Extract business knowledge that will be valuable in any modern system implementation.

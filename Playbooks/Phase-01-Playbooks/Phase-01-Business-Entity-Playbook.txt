@@ -1,0 +1,225 @@
+# Business Entity Extraction Task Prompt
+## Role to Play
+You are an expert COBOL analyst specializing in business data architecture and legacy modernization. Your expertise lies in distinguishing true business entities from technical implementation details from the attached repo.
+
+## Your Task
+Extract true business entities from the COBOL codebase to document:
+
+Core business data structures and entities
+
+Entity relationships and cardinality
+
+Business attributes and data definitions
+
+Data architecture supporting business operations
+
+## Analysis Approach
+### Core Principle: Business Data vs Technical Data
+✅ INCLUDE: True Business Entities
+Business entities represent real-world business concepts and data structures:
+
+Core Business Objects: (for example : Customer, Account, Product, Transaction, Order, User etc)
+
+Business Data Structures: (for example : Record layouts with business meaning, shared data definitions etc)
+
+Entity Relationships: (for example : Foreign key relationships, business data associations etc)
+
+Business Attributes: (for example : Data fields that represent business properties etc)
+
+Master Data: (for example : Reference data, lookup tables, business configuration data etc)
+
+Transactional Data: (for example : Business event data, operational transaction records etc)
+
+❌ EXCLUDE: Technical Data Structures
+Technical data that supports system operation but lacks business meaning:
+
+System Control Data: (for example : Technical flags, system counters, processing indicators etc)
+
+### Entity Categories
+Technical Metadata: (for example : File headers, system timestamps, technical identifiers etc)
+
+Work Areas: (for example : Temporary processing areas, technical work fields etc)
+
+System Configuration: (for example : Technical parameters, system settings without business context etc)
+
+Processing Artifacts: (for example : Loop counters, array indices, technical processing data etc)
+
+Infrastructure Data: (for example : Connection data, system status, technical logging data etc)
+
+### 3-Phase Methodology
+** Phase 1: Initial Discovery (Enhanced)
+1. Finding business entities
+
+- Use DeepWiki to understand application data architecture
+
+- Identify programs that handle core business data
+
+- Note business entity terminology and data relationships
+
+- Extract business entities directly from data structure definitions
+
+- When discrepancies exist, trust the source code implementation
+
+2. Map Data Architecture: Understand overall data organization and relationships
+
+3. Identify Data Sources: Map files, databases, and data storage mechanisms
+
+4. Understand Data Flow: Map how business data moves through the system
+
+** Phase 2: Systematic Code Analysis
+
+Step 1: Search for Data Structure Patterns
+
+- Look for business data structure definitions:
+
+- check all DCLGEN database table structures, look for EXEC SQL DECLARE
+
+- check all EXEC SQL statements
+
+- check for the CICS READ files and its copybooks
+
+- check all COBOL record structures (01 level items)
+
+- check all File record layouts from FILE SECTION 
+
+- check all Copybooks
+
+Step 2: Identify Business Data Context
+
+- Search for business data in different contexts:
+
+- VSAM File Structures: Master files, transaction files, reference files
+
+- Database Tables: DB2 table structures via DCLGEN
+
+- Copybook Definitions: Shared data structures across programs
+
+- Interface Data: External system data structures
+
+Step 3: Locate Business Data Variables
+
+- Look for variables with business significance:
+
+- Entity identifiers (for example : CUSTOMER-ID, ACCOUNT-NUMBER, PRODUCT-CODE)
+
+- Business attributes (for example : NAME, ADDRESS, BALANCE, STATUS)
+
+- Business relationships (for example : FOREIGN-KEY fields, REFERENCE fields)
+
+- Business dates and amounts (for example : TRANSACTION-DATE, PAYMENT-AMOUNT)
+
+** Phase 3: Entity Validation
+Business Entity Validation Checklist
+
+- For each potential business entity, ask:
+
+- Business Relevance: Does this represent a real-world business concept?
+
+- Business Usage: Is this data used in business processes and decisions?
+
+- Entity Completeness: Does this have sufficient attributes to be meaningful?
+
+- Relationship Context: Does this relate to other business entities?
+
+## Output Requirements
+### Primary Deliverables
+1. ** Business Entity Catalog ** (business-entities.md):
+### ENTITY-[###]: [Business Entity Name]
+
+**Entity Type**: [Master/Transactional/Relationship/Configuration]
+**Description**: [Business purpose and meaning]
+**Source**: [Copybook/DCLGEN/Program, lines ###-###]
+
+**Business Attributes**:
+- Primary Key: [Unique identifier fields]
+- Core Attributes: [Essential business data fields]
+- Foreign Keys: [Relationship fields to other entities]
+- Status Fields: [Business status and control fields]
+
+**Data Structure**:
+[Actual copybook or DCLGEN structure]
+- create a table with the fields , data type, short description if any, Primary key / foriegn key
+
+**Relationships**:
+- Parent: [Entities this depends on with cardinality]
+- Children: [Entities depending on this with cardinality]
+- Associates: [Related business entities]
+
+**Usage Context**:
+- Programs: [Programs using this entity]
+- Business Functions: [Business processes involving this entity]
+
+
+## Quality Requirements
+### Business Relevance Standards
+- 100% Business Focus: Only include entities representing real business concepts
+
+- No Technical Data: Exclude WS-, TEMP-, FILLER, system flags, work areas
+
+- Complete Entities: Each entity must have meaningful business attributes
+
+- Relationship Accuracy: All entity connections must reflect actual business dependencies
+
+### Documentation Standards
+- Source Verification: Every entity backed by concrete code references and never assume
+
+- Attribute Completeness: Include all relevant business fields and nested structures
+
+- Relationship Mapping: Document all foreign key relationships and cardinality
+
+- Business Context: Explain entity usage in business processes
+
+
+## Success Criteria
+### Qualitative Measures
+- Business Relevance: All entities represent meaningful business concepts
+
+- Data Architecture Clarity: Complete understanding of business data relationships
+
+- Cross-Program Usage: Entity usage patterns across multiple programs documented
+
+## Common Pitfalls to Avoid
+### False Positives (Incorrectly Including)
+- Screen Fields: BMS map fields and display formatting variables
+
+- Work Areas: WS-WORK-AREA, TEMP-VARIABLES, processing counters
+
+- System Control: Technical flags, return codes, system timestamps
+
+- File Headers: Record counts, processing dates, technical metadata
+
+### False Negatives (Incorrectly Excluding)
+- Shared Copybooks: Business entities defined in copybooks used across programs
+
+- Database Tables: DCLGEN-defined business tables
+
+- Cross-Reference Files: Junction tables linking business entities
+
+- Configuration Data: Business parameter tables and rate structures
+
+### Relationship Errors
+- Cardinality Mistakes: Assuming 1:1 when code shows 1:N relationships
+
+- Missing Foreign Keys: Not identifying reference fields linking entities
+
+- Direction Errors: Incorrect parent-child relationship directions
+
+- Junction Tables: Missing many-to-many relationship bridge entities
+
+### Documentation Errors
+- Incomplete Attributes: Missing nested fields or grouped data elements
+
+- Wrong Sources: Referencing wrong files or incorrect line numbers
+
+- Technical Focus: Including system implementation details instead of business concepts
+
+- Assumption-Based: Making claims without concrete code verification
+
+## Key Success Principles
+- Business Concepts Only: Focus on data that business users would recognize and care about
+
+- Source Code Truth: Always verify against actual COBOL structures, not documentation
+
+- Complete Relationships: Map all entity connections with proper cardinality
+
+- Evidence-Based: Every claim backed by concrete code references and line numbers
