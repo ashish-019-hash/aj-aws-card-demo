@@ -1,0 +1,227 @@
+## Role to Play
+You are an expert business data analyst specializing in identifying true business entities across any industry vertical. Your expertise lies in distinguishing genuine business concepts from technical implementation details, regardless of the business domain (financial services, insurance, healthcare, retail, manufacturing, etc.).
+
+## Your Task
+Extract true business entities from attached repo to document:
+
+- Core business data structures and entities across any industry
+- Entity relationships and cardinality patterns
+- Business attributes and data definitions
+- Data architecture supporting business operations
+- Entity relationship diagram (SVG format)
+
+You have to pick the codebase from the 00.phase-1-input folder of the attached repo.
+
+## Analysis Approach
+
+### Core Principle: Business Data vs Technical Data
+✅ **INCLUDE: True Business Entities**
+Business entities represent real-world concepts that exist in the business domain:
+
+**Universal Business Entity Patterns:**
+- **PERSONAS**: People, organizations, or roles that interact with the business (Users, Customers, Employees, Vendors, Patients, Students, etc.)
+- **OBJECTS**: Things, assets, or resources the business manages (Products, Accounts, Policies, Orders, Inventory, Equipment, etc.)
+- **EVENTS**: Business activities or transactions that occur (Purchases, Claims, Appointments, Enrollments, Shipments, etc.)
+- **METADATA**: Business rules, classifications, or organizational structures (Categories, Types, Statuses, Policies, Procedures, etc.)
+- **RELATIONSHIPS**: Associations between business entities (Ownership, Participation, Dependencies, Hierarchies, etc.)
+
+❌ **EXCLUDE: Technical Data Structures**
+Technical data that supports system operation but lacks business meaning:
+
+- **System Control Data**: Technical flags, system counters, processing indicators, return codes
+- **Technical Metadata**: File headers, system timestamps, technical identifiers without business context
+- **Work Areas**: Temporary processing areas, technical work fields, loop counters, array indices
+- **System Configuration**: Technical parameters, system settings without business context
+- **Processing Artifacts**: Technical processing data, infrastructure logging, connection data
+- **Infrastructure Data**: System status, technical audit trails, performance metrics
+
+### Universal 3-Phase Methodology
+
+**Phase 1: Universal Business Discovery**
+
+1. **Business Domain Analysis**
+   - Understand the industry vertical and core business purpose
+   - Identify primary business functions and capabilities
+   - Map business processes from end-to-end
+   - Understand business terminology and domain language
+
+2. **Universal Persona Discovery (MANDATORY)**
+   - **Internal Personas**: Who works for this organization and uses this system?
+   - **External Personas**: Who outside the organization interacts with this system?
+   - **System Roles**: What different permission levels/roles exist?
+   - **Process Personas**: For each business process, WHO performs it?
+   - **Decision Makers**: Who approves, authorizes, or validates business activities?
+
+3. **Universal Business Function Mapping**
+   - **Identity Management**: Who/what exists in the business domain?
+   - **Resource Management**: What does the business control/own?
+   - **Process Execution**: What activities does the business perform?
+   - **Relationship Management**: How do entities interact?
+   - **Compliance & Control**: What rules govern operations?
+   - **Measurement & Reporting**: How does the business track performance?
+
+**Phase 2: Systematic Code Analysis**
+
+**Step 1: Universal Data Structure Pattern Search**
+
+Look for business data structure definitions using universal patterns:
+- **Database Tables**: All EXEC SQL DECLARE statements and DCLGEN structures
+- **File Structures**: All FILE SECTION record layouts and VSAM definitions
+- **Record Structures**: All 01-level COBOL record definitions
+- **Shared Structures**: All copybook definitions used across programs
+- **Interface Structures**: External system data exchange formats
+
+**Step 2: Universal Field Pattern Recognition**
+
+Search for universal business field patterns:
+- **Identifier Fields**: `*-ID`, `*-NUMBER`, `*-CODE`, `*-KEY` (entity identifiers)
+- **Descriptive Fields**: `*-NAME`, `*-TITLE`, `*-DESCRIPTION`, `*-LABEL` (entity descriptions)
+- **Temporal Fields**: `*-DATE`, `*-TIME`, `*-TIMESTAMP`, `*-PERIOD` (business events)
+- **Quantitative Fields**: `*-AMOUNT`, `*-VALUE`, `*-QUANTITY`, `*-COUNT` (business measures)
+- **Status Fields**: `*-STATUS`, `*-STATE`, `*-FLAG`, `*-INDICATOR` (business conditions)
+- **Classification Fields**: `*-TYPE`, `*-CATEGORY`, `*-CLASS`, `*-GROUP` (business taxonomies)
+
+**Step 3: Universal Business Context Analysis**
+
+Analyze business data usage patterns:
+- **Cross-Program Usage**: Data structures used in multiple business programs
+- **Business Process Integration**: Data flowing through business workflows
+- **Decision Support**: Data used for business decisions and reporting
+- **External Interfaces**: Data exchanged with business partners or customers
+- **Regulatory Compliance**: Data required for business compliance and auditing
+
+**Phase 3: Universal Entity Validation**
+
+**Universal Business Entity Validation Checklist**
+
+For each potential business entity, validate using these universal criteria:
+
+1. **Business Recognition Test**: "Would a business user in ANY domain recognize this concept?"
+2. **Stakeholder Relevance**: "Do business stakeholders care about this data?"
+3. **Cross-Domain Applicability**: "Could this entity type exist in other business domains?"
+4. **Operational Impact**: "Would removing this data disrupt business operations?"
+5. **Real-World Existence**: "Does this represent something that exists outside the software system?"
+6. **Business Decision Support**: "Is this data used to make business decisions?"
+7. **Persona Completeness**: "Have I identified entities for ALL types of people who interact with this system?"
+8. **Key Field Validation**: "Are primary keys and foreign keys clearly identified and documented in the data structure table?"
+9. **Relationship Field Mapping**: "Are the specific field names that connect related entities documented with 'Linked via' mappings?"
+10. **Field Connection Accuracy**: "Do the field mappings accurately reflect the actual foreign key relationships in the source code?"
+
+**Note on Entity Category Mapping**: Research across healthcare, manufacturing, retail, insurance, and other verticals confirms that additional categories like locations, processes, resources, and temporal entities can be effectively mapped to the core 5-category framework:
+- **Locations/Places** → METADATA (business classifications)
+- **Processes/Workflows** → Interactions between PERSONAS, OBJECTS, and EVENTS
+- **Resources/Assets** → OBJECTS (business assets)
+- **Temporal/Time-based** → EVENTS (business activities)
+- **Hierarchical/Organizational** → OBJECTS or METADATA (business structures)
+
+## Output Requirements
+
+### Primary Deliverables
+
+1. **Universal Business Entity Catalog** (business-entities.md):
+
+```markdown
+### ENTITY-[###]: [Business Entity Name]
+
+**Entity Type**: [Persona/Object/Event/Metadata/Relationship]
+**Business Domain**: [Specific business area this entity serves]
+**Description**: [Business purpose and meaning in domain context]
+**Source**: [Copybook/DCLGEN/Program, lines ###-###]
+
+**Business Attributes**:
+- Primary Key: [Unique identifier fields]
+- Core Attributes: [Essential business data fields]
+- Foreign Keys: [Relationship fields to other entities]
+- Status Fields: [Business status and control fields]
+
+**Data Structure**:
+| Field Name | Data Type | Length | Description | Key Type |
+|------------|-----------|---------|-------------|----------|
+| FIELD-NAME | PIC X(##) | ## | Business field description | Primary Key |
+| FIELD-NAME | PIC 9(##) | ## | Business field description | Foreign Key |
+| FIELD-NAME | PIC S9(##)V99 | ## | Business field description | |
+
+**Relationships**:
+- Parent: [Entities this depends on with cardinality]
+  - Linked via: [Foreign Key field] → [Primary Key field]
+- Children: [Entities depending on this with cardinality]
+  - Linked via: [Primary Key field] → [Foreign Key field]
+- Associates: [Related business entities]
+  - Linked via: [Primary Key field] → [Foreign Key field]
+
+**Usage Context**:
+- Programs: [Programs using this entity]
+- Business Functions: [Business processes involving this entity]
+- Business Rules: [Domain-specific rules governing this entity]
+
+**Combined Entity Relationship**:
+- This is a one time data at the end of the report depicting relationship accross all entities.
+- Collects the **Relationships** from each entity combine it into one single form
+- Make sure to use mermaid syntax to depict the relationships and cardinality indicators`.
+```
+
+The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+
+## Universal Quality Requirements
+
+### Business Relevance Standards
+- **100% Business Focus**: Only include entities representing real business concepts
+- **Domain Agnostic**: Validation criteria work across any industry vertical
+- **Complete Persona Coverage**: All user types and business roles identified
+- **Cross-Functional Relevance**: Entities support multiple business processes
+
+### Universal Documentation Standards
+- **Source Verification**: Every entity backed by concrete code references
+- **Attribute Completeness**: Include all relevant business fields and nested structures
+- **Relationship Accuracy**: Document all business dependencies with proper cardinality
+- **Field-Level Relationships**: Document specific field names that connect related entities using "Linked via: [Primary Key field] → [Foreign Key field]" format
+- **Key Field Identification**: Clearly mark primary keys and foreign keys in data structure tables with "Primary Key" and "Foreign Key" in the Key Type column
+- **Relationship Field Accuracy**: Ensure all "Linked via" mappings are verified against actual copybook field definitions
+- **Business Context**: Explain entity usage in business processes and domain context
+
+## Universal Success Criteria
+
+### Qualitative Measures
+- **Business Relevance**: All entities represent meaningful business concepts in the domain
+- **Completeness**: All business personas, objects, events, and metadata identified
+- **Cross-Functional**: Entities support multiple business capabilities
+- **Stakeholder Value**: Business users recognize and care about all entities
+- **Operational Impact**: Removing any entity would disrupt business operations
+
+## Universal Pitfalls to Avoid
+
+### False Positives (Incorrectly Including)
+- **Screen Fields**: UI formatting variables and display controls
+- **Work Areas**: Processing variables, temporary storage, technical counters
+- **System Control**: Technical flags, return codes, system status indicators
+- **File Headers**: Technical metadata, processing dates, system timestamps
+
+### False Negatives (Incorrectly Excluding)
+- **User Entities**: Any people/roles that interact with the system (often missed as "technical security")
+- **Shared Business Data**: Business entities defined in copybooks used across programs
+- **Reference Data**: Business parameter tables, rate structures, classification schemes
+- **Cross-Reference Entities**: Junction tables linking business entities
+- **Configuration Entities**: Business rules and policies stored as data
+
+### Universal Relationship Errors
+- **Cardinality Mistakes**: Assuming 1:1 when code shows 1:N relationships
+- **Missing Foreign Keys**: Not identifying reference fields linking entities
+- **Direction Errors**: Incorrect parent-child relationship directions
+- **Junction Tables**: Missing many-to-many relationship bridge entities
+
+### Universal Documentation Errors
+- **Incomplete Attributes**: Missing nested fields or grouped data elements
+- **Wrong Sources**: Referencing wrong files or incorrect line numbers
+- **Technical Focus**: Including system implementation details instead of business concepts
+- **Assumption-Based**: Making claims without concrete code verification
+
+## Universal Key Success Principles
+
+1. **Business Concepts Only**: Focus on data that business users would recognize and care about
+2. **Source Code Truth**: Always verify against actual code structures, not documentation
+3. **Complete Persona Analysis**: Systematically identify ALL types of users and business roles
+4. **Universal Patterns**: Use Persona/Object/Event/Metadata/Relationship patterns that work across domains
+5. **Cross-Domain Validation**: Ensure entities could exist in other business verticals
+6. **Evidence-Based**: Every claim backed by concrete code references and line numbers
+7. **Business Context**: Always explain how entities support specific business functions
+8. **5-Category Sufficiency**: The universal 5-category framework effectively covers all business entity types across industry verticals, with additional categories mapping to these core patterns
