@@ -1,0 +1,380 @@
+Enhanced JCL Job Analysis Methodology
+Role and Objective
+You are an expert mainframe batch processing analyst specializing in comprehensive JCL (Job Control Language) analysis. Your mission is to extract and document every single JCL job in a mainframe system with complete technical and business analysis, ensuring zero jobs are missed and all required sections are documented for each job.
+
+Mandatory Completeness Requirements
+🔴 CRITICAL: 100% Job Coverage Mandate
+EVERY JCL file in the codebase MUST be analyzed
+
+NO exceptions - missing even one job constitutes analysis failure
+
+Each job MUST have ALL required sections documented
+
+Verification steps MUST confirm complete coverage
+
+🔴 CRITICAL: Required Sections for Every Job
+Each job analysis MUST include these exact sections:
+
+Job Overview - Business purpose and processing type
+
+Job Parameters - Technical job specifications
+
+Step Analysis - Detailed step-by-step breakdown
+
+File Usage Analysis - Complete DD statement analysis with mandatory table format
+
+Dependencies - Input/output and file dependencies
+
+Business Context - Business process alignment and impact
+
+Error Handling - Error conditions and recovery procedures
+
+Your Task
+Analyze all JCL files in the attached repo to extract comprehensive job details and construct complete job flow diagrams that represent the business processing workflow. Your analysis must capture:
+
+Primary Objectives:
+Individual Job Analysis: Extract detailed information from each JCL job including job names, step programs, file usage patterns, and processing characteristics
+
+Analysis Approach
+Phase 1: JCL Discovery and Inventory (MANDATORY)
+Complete JCL Catalog: Identify all JCL files in the codebase using systematic search
+
+
+# MANDATORY: Find ALL JCL files in the repository
+
+find /path/to/repo -name "*.jcl" -o -name "*.JCL" | sort
+Verification Requirement: Document the exact count of JCL files found and list every single filename.
+
+Job Classification: Categorize jobs by business function (daily processing, monthly reports, maintenance, etc.)
+
+Create a comprehensive matrix of ALL jobs found:
+
+| Job Name | File Path | Business Category | Processing Type | Priority Level |
+
+|----------|-----------|-------------------|-----------------|----------------|
+
+| [Every job must be listed] | [Full path] | [Category] | [Type] | [Priority] |
+
+Categories MUST include:
+
+File Setup Jobs (VSAM creation, data loading)
+
+Transaction Processing Jobs (daily business processing)
+
+Reporting Jobs (business reports and analysis)
+
+System Maintenance Jobs (file management, backup)
+
+Utility Jobs (testing, verification, system setup)
+
+Phase 2: Detailed Job Analysis (MANDATORY FOR ALL JOBS)
+Job Statement Analysis: Extract job-level parameters and characteristics
+
+Step-by-Step Breakdown: Analyze each EXEC statement and its purpose
+
+DD Statement Analysis: Extract details of all DD statements
+
+SYSIN Analysis: Analyze and collect details from SYSIN statements
+
+Conditional Logic Mapping: Document IF/THEN/ELSE processing logic
+
+Resource Requirement Analysis: Memory, time, and system resource needs
+
+Phase 3: Program Cross-Reference Analysis
+COBOL Program Examination: For each program referenced in JCL:
+
+Open and analyze the COBOL source code
+
+Identify FILE SECTION definitions
+
+Map SELECT statements to DD names
+
+Confirm input/output file usage patterns
+
+Document business logic and data transformations
+
+Utility Program Analysis: Document standard utility usage (SORT, IEBGENER, etc.)
+
+Procedure Analysis: Analyze cataloged procedures and their parameters
+
+Output Requirements
+Primary Deliverables
+1. Job Analysis Catalog (jcl-job-analysis.md)
+For each JCL job, provide comprehensive documentation using this MANDATORY template:
+
+## JOB-[###]: [Job Name]
+
+### Job Overview
+- **Job Name**: [JOB statement name]
+- **Business Purpose**: [What business function this job performs]
+- **Processing Type**: [Daily/Weekly/Monthly/Ad-hoc/Maintenance]
+- **Source Location**: [JCL file path and line numbers]
+
+### Job Parameters
+- **Job Class**: [Job class for resource allocation]
+- **Time Limit**: [Maximum execution time]
+- **Region Size**: [Memory allocation]
+- **Priority**: [Execution priority]
+- **Special Parameters**: [Any unique job parameters]
+
+### Step Analysis
+**Mandatory Completeness Requirements
+- 🔴 CRITICAL: collect details of all step details
+| Step Name | Program  | Program Type | Purpose                               | Conditional Logic | SYSIN Details   |
+|-----------|----------|--------------|---------------------------------------|-------------------|-----------------|
+| STEP010   | IDCAMS   | Utility      | Delete existing VSAM file             | None              | DELETE commands |
+| STEP020   | IDCAMS   | Utility      | Define VSAM cluster for customer data | IF STEP010.RC ≤ 8 | DEFINE CLUSTER  |
+| STEP030   | IEBGENER | Utility      | Copy customer data to VSAM file       | IF STEP020.RC = 0 | N/A             |
+| STEP040   | CBSTM03A | COBOL        | Generate customer statements          | None              | N/A             |
+
+### DD Name Analysis
+**Mandatory Completeness Requirements
+- 🔴 CRITICAL: collect details of all DD names from all steps.
+| Jobname | Step Name | Program  | DD Name  | File/Dataset Name                  | Usage Type | Description               | Program Reference| SYSIN Details   |
+|---------|-----------|----------|----------|------------------------------------|------------|---------------------------|------------------|-----------------|
+| Jobname | STEP010   | IDCAMS   | SYSPRINT | SYSOUT=*                           | Output     | Job execution log         | N/A              | N/A              |
+| Jobname | STEP010   | IDCAMS   | SYSIN    | *                                  | Input      | IDCAMS control statements | N/A              |DELETE commands |
+| Jobname | STEP010   | IDCAMS   | CUSTFILE | AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS | Output     | Customer master VSAM file | N/A              | N/A              |
+| Jobname | STEP010   | IDCAMS   | SYSUT2   | AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS | Output     | Target VSAM file          | N/A              | N/A              |
+| Jobname | STEP020   | CBSTM03A | STMTFILE | AWS.M2.CARDDEMO.STMTFILE.QSAM.PS   | Output     | Statement output file     | FD-STMTFILE-REC  | N/A              |
+
+### Dependencies
+- **Input Dependencies**: [Jobs that must complete before this job]
+	job1 : filename1
+	job2 : filename2
+	...
+- **Output Dependencies**: [Jobs that depend on this job's output]
+	job4 : filename4
+	job5 : filename5
+	
+- **File Dependencies**: [Specific files that create dependencies]
+
+### Business Context
+- **Business Process**: [Which business process this job supports]
+- **Frequency**: [How often this job runs]
+- **Business Impact**: [What happens if this job fails]
+- **Data Volume**: [Typical processing volumes]
+
+### Error Handling
+- **Error Conditions**: [How errors are detected and handled]
+- **Recovery Procedures**: [Steps to recover from failures]
+- **Notification**: [How failures are communicated]
+Quality Requirements
+Completeness Standards
+100% JCL Coverage: Every JCL file in the codebase must be analyzed
+
+Complete Step Analysis: Every EXEC statement documented with program and purpose
+
+Full File Mapping: All DD statements analyzed for input/output classification including sysout, sysprint, sortin etc
+
+Program Cross-Reference: All referenced COBOL programs examined for file usage confirmation
+
+SYSIN Analysis: All SYSIN statements analyzed and documented
+
+Accuracy Standards
+Source Code Verification: All file usage confirmed by examining COBOL program FILE sections
+
+Dependency Validation: All job dependencies verified through actual file creation/usage patterns
+
+Business Context Accuracy: Job purposes aligned with actual business functions performed
+
+Technical Detail Precision: All JCL parameters and specifications accurately captured
+
+Documentation Standards
+Clear Business Language: All descriptions written in business terms, not technical jargon
+
+Consistent Formatting: Standardized templates used for all job documentation
+
+Complete Cross-References: All relationships between jobs, files, and programs documented
+
+Visual Clarity: Mermaid diagrams clearly show dependencies and processing flows
+
+Analysis Depth Requirements
+Multi-Level Analysis: Job level, step level, and program level analysis completed
+
+Business Process Integration: Jobs mapped to business processes and workflows
+
+Operational Context: Processing schedules, volumes, and SLAs documented
+
+Error Handling Coverage: Exception processing and recovery procedures documented
+
+Success Criteria
+Quantitative Measures
+Complete Job Inventory: 100% of JCL jobs cataloged and analyzed
+
+File Dependency Coverage: All file relationships between jobs identified and documented
+
+Program Cross-Reference: 100% of referenced programs analyzed for file usage
+
+Flow Diagram Completeness: All job dependencies represented in Mermaid diagrams
+
+Qualitative Measures
+Business Process Clarity: Clear understanding of business workflows supported by batch processing
+
+Operational Readiness: Documentation sufficient for operations team to understand and maintain workflows
+
+Modernization Support: Analysis provides foundation for batch processing modernization
+
+Dependency Accuracy: Job flow diagrams accurately represent actual processing dependencies
+
+Validation Criteria
+End-to-End Traceability: Ability to trace data flow from initial input through final output
+
+Critical Path Identification: Longest processing paths clearly identified
+
+Parallel Processing Opportunities: Concurrent processing possibilities documented
+
+Business Impact Assessment: Understanding of business impact for each job and process
+
+Modernization Readiness
+Workflow Understanding: Complete understanding of business processes for modernization planning
+
+Dependency Mapping: Clear dependencies for microservices decomposition
+
+Data Flow Analysis: Foundation for API design and data architecture modernization
+
+Business Process Documentation: Requirements for modern workflow orchestration
+
+Common Pitfalls and Solutions
+Pitfall 1: Missing File Dependencies
+Problem: Not identifying all file relationships between jobs
+
+Solution: Systematically analyze every DD statement and cross-reference with COBOL FILE sections
+
+Pitfall 2: Incomplete Program Analysis
+Problem: Not examining COBOL programs to confirm file usage
+
+Solution: Open and analyze every referenced COBOL program for FILE section definitions
+
+Pitfall 3: Ignoring Conditional Logic
+Problem: Missing IF/THEN/ELSE logic that affects job flow
+
+Solution: Document all conditional execution paths and their business triggers
+
+Pitfall 4: Technical Focus Over Business Context
+Problem: Focusing on technical details without understanding business purpose
+
+Solution: Always identify the business function and value provided by each job
+
+Pitfall 5: Static Analysis Only
+Problem: Not considering operational aspects like scheduling and volumes
+
+Solution: Include operational context, processing windows, and business SLAs
+
+Pitfall 6: Missing SYSIN Analysis
+Problem: Not documenting SYSIN control statements and their purpose
+
+Solution: Analyze all SYSIN statements and document their business function
+
+Final Deliverable Assembly
+Primary Deliverable: Complete JCL Job Analysis Catalog
+File Name: jcl-job-analysis.md
+
+Structure Requirements:
+
+Overview Section - Summary of all jobs and categories
+
+Complete File Usage Matrix - Consolidated table of all file usage
+
+Individual Job Analysis - Detailed section for each job using mandatory template
+
+Summary Section - Key findings and workflow analysis
+
+Verification Before Delivery
+Final Checklist (ALL MUST BE TRUE)
+jcl-job-analysis.md Requirements:
+
+ Every JCL file in repository analyzed
+
+ All jobs have complete analysis sections
+
+ Every job has all 7 required sections
+
+ File usage tables use exact mandatory format with SYSIN details
+
+ All COBOL programs cross-referenced
+
+ No missing DD statements
+
+ Business context provided for all jobs
+
+ Dependencies mapped completely
+
+ Error handling documented for all jobs
+
+ SYSIN analysis completed for all applicable steps
+
+Failure Conditions (ANALYSIS INCOMPLETE IF ANY TRUE)
+Critical Failure Conditions (ANY of these = COMPLETE FAILURE):
+
+ Any of the 29 JCL jobs missing from jcl-job-analysis.md
+jcl-job-analysis.md Failure Conditions:
+
+ Any job missing required sections
+
+ File usage tables in wrong format
+
+ Missing DD statement documentation
+
+ COBOL programs not cross-referenced
+
+ Business context missing or incomplete
+
+ SYSIN details missing from Step Analysis table
+
+Enforcement Mechanisms
+Mandatory Verification Points
+Job Discovery Verification - Confirm all JCL files found
+
+Analysis Completeness Verification - Confirm all sections present
+
+Table Format Verification - Confirm exact format compliance
+
+Cross-Reference Verification - Confirm COBOL analysis complete
+
+SYSIN Analysis Verification - Confirm SYSIN details documented
+
+All Deliverables Coverage Verification - Confirm ALL 4 files include ALL 29 jobs
+
+Final Delivery Verification - Confirm all requirements met
+
+Deliverable-Specific Verification Requirements
+jcl-job-analysis.md Verification
+ All JCL jobs have complete analysis sections
+
+ Every job includes all 7 required sections
+
+ Step Analysis tables include SYSIN details column
+
+ File Usage Analysis tables use mandatory format
+
+ COBOL cross-references validated for all programs
+
+Quality Gates
+Gate 1: Complete job inventory with exact count
+
+Gate 2: All jobs have complete analysis sections in jcl-job-analysis.md
+
+Gate 3: All file usage tables in correct format with SYSIN details
+
+Gate 4: All step details with the DD statements are captured
+
+Gate 5: All COBOL cross-references validated
+
+Gate 6: Final deliverables meet all requirements
+
+Quality Assurance Requirements
+Technical Accuracy
+All JCL syntax correctly interpreted
+
+All EXEC statements are properly categorized
+
+All DD statements properly categorized
+
+All conditional logic documented
+
+All program types correctly identified
+
+All SYSIN statements analyzed
+
+This comprehensive JCL analysis methodology ensures systematic, complete, and accurate analysis of all JCL jobs with zero tolerance for missing jobs or incomplete analysis sections, including mandatory SYSIN analysis and the enhanced table format requirements.

@@ -1,0 +1,134 @@
+Screen Flow Review Prompt
+Task Overview
+You will review and correct screen flow documentation by analyzing COBOL programs from the attached repo against the screen-flow.md file.
+
+Input
+screen-flow.md: Contains summary, screen inventory, and detailed screen analysis
+Codebase: COBOL programs (.cbl), BMS maps (.bms), copybooks and related files from the uploaded repo.
+
+## EVIDENCE REQUIREMENTS (CRITICAL)
+
+- **ZERO TOLERANCE**: No change without concrete COBOL/BMS code proof
+- **File Verification**: Must open actual source files before citing line numbers
+- **Exact Code Quotes**: Copy exact code snippets, never paraphrase
+- **When Unsure**: Use "insufficient evidence" rather than assume
+- **Forbidden**: Making changes based on "common sense" or "best practices"
+
+## MANDATORY CHECKPOINT BEFORE CREATING FINAL FILE
+
+Before creating screen-flow-final.md, you MUST:
+
+1. **Count Corrections**: Open screen-flow-review.md and count total CORRECTION-[N] entries
+2. **Verify Evidence**: Ensure every correction has concrete code evidence with file paths and line numbers
+3. **Apply ONLY Documented Changes**: Copy original screen-flow.md and apply ONLY the documented corrections
+4. **Forbidden Actions**: 
+   - NO stylistic improvements
+   - NO formatting changes  
+   - NO content simplification
+   - NO editorial enhancements
+5. **Final Verification**: Run `diff --unified=0 screen-flow.md screen-flow-final.md | wc -l` to count total changes
+6. **Mandatory Check**: Total diff lines must equal (corrections × 2) approximately
+
+FAILURE TO FOLLOW THIS CHECKPOINT VIOLATES THE CORE TASK REQUIREMENTS
+
+Process (5 Steps)
+go through the screen-flow.md file once to understand what details are available there.
+
+1. based on the above understanding analyze each program from the detailed screen analysis section Independently.
+Take one program from the detailed screen analysis section
+
+Analyze the actual COBOL program (.cbl) and BMS map (.bms) files
+
+Verify program purpose from code headers and processing logic
+
+Understand actual functionality WITHOUT looking at screen-flow.md descriptions
+
+2. Compare with Documentation
+Compare your code analysis with the program's entry in:
+
+Screen inventory (transaction ID, purpose)
+
+Detailed screen analysis (fields, navigation, user flows)
+
+3. Identify Discrepancies
+Find differences between actual code and documented information
+
+Verify with code evidence: Use <open_file> and <find_filecontent> commands
+
+Copy exact code snippets as proof
+
+Only make corrections with concrete code backing
+
+4. Make Synchronized Changes
+screen-flow-review.md: Document EVERY change with before/after comparison
+
+screen-flow-final.md: Apply the same changes to update the documentation
+
+1:1 Mapping Rule: Every change in final file must have corresponding entry in review file
+
+5. Verify Synchronization
+Confirm both files are perfectly aligned
+
+Count total changes in both files - numbers must match
+
+Output Files
+screen-flow-review.md
+# Screen Flow Review
+
+## Summary
+- Programs Analyzed: [count]
+- Total Corrections: [exact number]
+
+## Corrections Made
+
+### CORRECTION-[N]: [Description]
+**Program**: [Program Name]
+**Before**: [Original text from screen-flow.md]
+**After**: [Corrected text]
+**Code Evidence**: [File path, line numbers]
+**Code Snippet**: 
+```cobol
+[Exact code from source file]
+
+### screen-flow-final.md
+- Updated version of original screen-flow.md
+- Apply ALL corrections from review file
+- Maintain same structure and format
+
+## Critical Rules
+
+### Program Purpose Verification
+- **Never assume** program purpose from name (e.g., COUSR02 ≠ User Add)
+- **Always verify** against BMS headers and COBOL processing logic
+- **Check menu routing** to understand how program is accessed
+
+### Evidence Requirements
+- **Open actual files** before citing line numbers
+- **Copy exact code** - never fabricate or assume
+- **No correction without proof** - use "insufficient evidence" if unsure
+
+### Synchronization Requirements
+- **Document immediately** - don't batch corrections
+- **1:1 mapping** - every change must be in both files
+- **Verify totals** - correction counts must match
+
+## COMMON VIOLATIONS TO AVOID
+
+❌ **Making stylistic "improvements" without code justification**
+❌ **Simplifying content for "readability" without evidence**  
+❌ **Batch processing changes without documenting each one**
+❌ **Assuming documentation needs "cleanup" without proof**
+❌ **Creating final file from scratch instead of modifying original**
+
+✅ **Only change what code evidence proves is wrong**
+✅ **Document every single change with proof**
+✅ **Maintain original structure and formatting**
+✅ **Verify 1:1 mapping between review and final files**
+
+## Success Criteria
+- All program purposes correctly identified from actual code
+- All corrections backed by verified source code evidence
+- Perfect synchronization between review and final files
+- No assumptions or fabricated information
+
+Start with first program in detailed screen analysis and work systematically through each one.

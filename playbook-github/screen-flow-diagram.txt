@@ -1,0 +1,156 @@
+# Mermaid Screen Flow Diagram Creation Prompt
+
+## Objective
+Create a clean, organized Mermaid flowchart diagram that visualizes COBOL application screen flows grouped by business workflows.
+
+## Input Requirements
+- **screen-flow-final.md**: Contains screen inventory and detailed navigation flows
+- **Main User Workflows**: From summary section (authentication, account operations, card management, transaction processing, bill payment, reports, user administration)
+
+## Diagram Structure
+
+### 1. Use Subgraphs for Workflow Grouping
+```mermaid
+subgraph WORKFLOW_NAME["🔍 Workflow Display Name"]
+    SCREEN1["Screen Name<br/>Program ID"]
+    SCREEN2["Screen Name<br/>Program ID"]
+end
+```
+
+### 2. Extract Workflow Categories from Documentation
+**Source**: Extract from `screen-flow-final.md` → Summary → Main User Workflows section
+
+**Process**:
+1. Locate the "Main user workflows" list in the summary section
+2. Create one subgraph per workflow category
+3. Assign appropriate emoji icons for visual clarity
+4. Group related screens under each workflow category
+
+**Example Extraction**:
+```
+From: "Main user workflows: User authentication, Account viewing and updating, Credit card management, Transaction management, Bill payment processing, Report generation, User administration"
+
+Create subgraphs:
+- 🔐 Authentication & Navigation
+- 💳 Account Management  
+- 🏦 Card Management
+- 📊 Transaction Management
+- 💰 Financial Operations
+- 📊 Report Generation
+- 👥 User Administration
+```
+
+**Screen Assignment Logic**:
+- Match screen purposes to workflow categories
+- Group screens that follow similar business processes
+- Consider navigation patterns and user journeys
+
+### 3. Navigation Flow Types
+- **Solid arrows** (`-->`) for primary navigation (menu selections, main workflows)
+- **Dotted arrows** (`-.->`) for secondary navigation (cross-references, F3 returns)
+- **Group-level arrows** for menu-to-workflow navigation to reduce clutter
+
+### 3.1 Arrow Separation Techniques
+**Problem**: Dotted arrows can be overwritten by solid arrows when they overlap
+
+**Solutions**:
+1. **Spatial Separation**: Place primary and secondary flows in different diagram sections
+2. **Intermediate Nodes**: Use invisible intermediate nodes to route arrows differently
+3. **Arrow Styling**: Use different arrow styles and colors for better distinction
+4. **Flow Grouping**: Group similar navigation types together to minimize crossings
+
+**Implementation Example**:
+```mermaid
+%% Primary flows (solid arrows) - top section
+MENU -->|"Primary"| WORKFLOW1
+MENU -->|"Primary"| WORKFLOW2
+
+%% Secondary flows (dotted arrows) - separate routing
+WORKFLOW1 -.->|"F3 Return"| MENU
+WORKFLOW2 -.->|"Cross-ref"| WORKFLOW1
+
+%% Use different arrow colors for distinction
+linkStyle 0 stroke:#2563eb,stroke-width:3px
+linkStyle 1 stroke:#dc2626,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+**Best Practices**:
+- Keep primary navigation flows in the main diagram flow
+- Route secondary navigation around the edges or use longer paths
+- Use consistent arrow styling with different colors/weights
+- Group return navigation (F3) separately from cross-references
+
+### 4. Simplification Rules
+- **Remove**: Error flows, validation loops, success messages, self-references
+- **Keep**: Main navigation paths, workflow progressions, F3 back navigation
+- **Group**: Similar navigation patterns (e.g., "Options 1-2" instead of individual arrows)
+
+### 5. Color Coding
+**Dynamic Color Assignment**: Create distinct color styles for each workflow category extracted from the documentation.
+
+**Color Palette Guidelines**:
+```css
+classDef style1 fill:#e1f5fe,stroke:#01579b,stroke-width:2px  /* Blue - Authentication/Login */
+classDef style2 fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px  /* Green - Data Management */
+classDef style3 fill:#fff3e0,stroke:#e65100,stroke-width:2px  /* Orange - Operations */
+classDef style4 fill:#fce4ec,stroke:#880e4f,stroke-width:2px  /* Pink - Processing */
+classDef style5 fill:#e0f2f1,stroke:#004d40,stroke-width:2px  /* Teal - Financial */
+classDef style6 fill:#fff8e1,stroke:#f57f17,stroke-width:2px  /* Yellow - Administration */
+classDef style7 fill:#f3e5f5,stroke:#4a148c,stroke-width:2px  /* Purple - Reporting */
+classDef style8 fill:#ffebee,stroke:#c62828,stroke-width:2px  /* Red - System/Exit */
+```
+
+**Assignment Strategy**: Assign colors based on workflow type (authentication, data management, operations, administration, etc.)
+
+## Quality Standards
+- **Minimal Crossing Lines**: Use subgraphs and group-level navigation
+- **Clear Visual Hierarchy**: Authentication → Menus → Workflows → Screens
+- **Business Focus**: Emphasize user workflows over technical navigation
+- **Professional Appearance**: Clean layout with logical grouping
+
+## Success Criteria
+- All 17 screens represented within appropriate workflow groups
+- Clear navigation paths without visual clutter
+- Easy to understand for non-technical business users
+- Logical flow from authentication through business functions
+- Minimal crossing arrows and overlapping elements
+
+## Example Implementation
+```mermaid
+flowchart TD
+    subgraph AUTH["🔐 [First Workflow from Summary]"]
+        SCREEN1["Screen Name<br/>PROGRAM1"]
+        SCREEN2["Screen Name<br/>PROGRAM2"]
+    end
+    
+    subgraph WORKFLOW["💳 [Second Workflow from Summary]"]
+        SCREEN3["Screen Name<br/>PROGRAM3"]
+        SCREEN4["Screen Name<br/>PROGRAM4"]
+    end
+    
+    %% Primary navigation flows (solid arrows)
+    SCREEN1 --> SCREEN2
+    SCREEN2 -->|"Menu Options"| WORKFLOW
+    SCREEN3 --> SCREEN4
+    
+    %% Secondary navigation flows (dotted arrows) - separated routing
+    SCREEN4 -.->|"Cross-ref"| SCREEN1
+    WORKFLOW -.->|"F3 Return"| AUTH
+    
+    %% Arrow styling for separation
+    linkStyle 0 stroke:#2563eb,stroke-width:3px
+    linkStyle 1 stroke:#2563eb,stroke-width:3px
+    linkStyle 2 stroke:#2563eb,stroke-width:3px
+    linkStyle 3 stroke:#dc2626,stroke-width:2px,stroke-dasharray: 5 5
+    linkStyle 4 stroke:#dc2626,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+**Note**: Replace bracketed placeholders with actual workflow names extracted from the documentation's summary section.
+
+**Arrow Separation Strategy**:
+- Primary flows use solid blue arrows with thicker lines
+- Secondary flows use dashed red arrows with thinner lines
+- Different routing paths prevent visual overlap
+- Consistent styling makes arrow types easily distinguishable
+
+This approach creates a clean, business-focused diagram that groups related screens logically while maintaining all essential navigation flows.

@@ -1,0 +1,74 @@
+# Concise User Stories Extraction Prompt
+
+## Role to Play
+You are an expert in legacy code analysis, modernization, and business domain analyst who translates technical COBOL code into user stories capturing actual user behavior and business processes.
+
+## Your Task
+Analyze all code files in the attached repo and md files fromt the session to extract business-level user stories for modernizing the system into a user-centric application (web/mobile interface). Use the following .md files in the session
+1. business-entities.md
+2. business-rules-catalog.md
+3. screen-flow.md
+4. validation-rules.md
+
+The above files will be available in the 01.phase-1-output folder of the attached github repo.
+
+**Include ONLY:**
+- User goals and business capabilities that provide direct value
+- Complete business functions users want to accomplish
+- User workflows and meaningful interactions with system features
+- Customer-facing, administrative, integration, and operational user functions
+
+**Exclude:**
+- Technical implementation details (variable declarations, file I/O, DB connections)
+- System processing without user visibility or interaction
+- Low-level redundant logic unless it contributes to user/business interaction
+- Infrastructure operations and system housekeeping without user impact
+
+## Analysis Approach
+1. **User-Facing Functionality Discovery**: Identify programs providing user-facing capabilities
+2. **User Role Mapping**: Map different user types (customers, staff, administrators) and their needs
+3. **Business Process Analysis**: Focus on what end-users want to achieve, trigger, or view
+4. **Value Validation**: Ensure each story provides direct business value to users
+
+## Output Requirements
+
+**user-stories.md** - For each user story:
+```
+### STORY-[###]: [User Story Title]
+
+**User Story**: "As a [type of user], I want to [perform business action] so that [business value/goal]"
+
+**Story Type**: [Customer-Facing/Administrative/Integration/Operational]
+
+**Source Location**: [Program name, line number/paragraph]
+
+**Acceptance Criteria**:
+- [Specific, testable criteria for story completion]
+- [Edge cases and error conditions]
+
+**User Journey Context**:
+- Entry Point: [How users access this functionality]
+- User Actions: [Steps user takes to accomplish goal]
+- Expected Outcomes: [What users achieve]
+
+**Business Value**: [Direct benefit to user and business impact]
+```
+The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+
+**Group stories by modules/screens when possible**
+
+## Quality Requirements
+- **User Value Focus**: All stories provide clear, direct value to business users
+- **Complete Coverage**: All user-facing functionality captured across all user types
+- **Business Relevance**: Stories represent meaningful business capabilities
+- **Source Accuracy**: Exact program references with line numbers
+- **Testable Criteria**: Acceptance criteria are specific and measurable
+
+## Success Criteria
+- **Completeness**: All user-facing functionality captured as stories across codebase
+- **User-Centric**: Stories focus on user goals rather than technical implementation
+- **Business Alignment**: Stories support business objectives and user needs
+- **Implementation Ready**: Stories suitable for modern application development
+- **Quality Documentation**: Clear, consistent format enabling effective modernization
+
+**Delivery**: Push results to new branch in `01.phase-1-output` folder, create pull request for review.

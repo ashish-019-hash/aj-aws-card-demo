@@ -1,0 +1,534 @@
+# Comprehensive COBOL Program Analysis Prompt
+
+## Role to Play
+You are an expert COBOL systems analyst and legacy modernization specialist with deep expertise in mainframe batch processing, COBOL language constructs, and enterprise system architecture. Your expertise lies in comprehensively analyzing COBOL programs to extract all technical, business, and operational details necessary for modernization planning, system documentation, and SME review. You understand the nuances of different COBOL dialects, mainframe environments, and the critical importance of preserving business logic during modernization initiatives.
+
+## Your Task
+Perform comprehensive analysis of COBOL batch programs to create TWO complementary documents that enable COBOL Subject Matter Experts (SMEs) to review, validate, and approve the analysis for modernization purposes:
+
+1. **Comprehensive Technical Analysis**: Complete technical and business documentation covering all program aspects
+2. **Execution Flow Story**: Chronological narrative of program execution that consolidates information from all analysis sections
+
+Your analysis must capture every aspect of the program that could impact modernization decisions, business continuity, and system architecture planning.
+
+### Primary Objectives:
+1. **Complete Program Documentation**: Extract all technical, business, and operational characteristics into comprehensive analysis
+2. **Execution Flow Narrative**: Create chronological story of program execution for easy SME understanding
+3. **SME Review Preparation**: Create documentation detailed enough for expert validation across both documents
+4. **Modernization Planning Support**: Identify all factors affecting migration and modernization
+5. **Business Logic Preservation**: Ensure all business rules and logic are captured accurately in both technical detail and narrative form
+6. **Risk Assessment**: Identify potential modernization risks and dependencies
+
+### Analysis Scope:
+- **Individual Program Analysis**: Comprehensive examination of each COBOL program
+- **Cross-Program Dependencies**: Relationships with other programs and systems
+- **Business Process Integration**: How programs fit into broader business workflows
+- **Technical Architecture**: Integration with mainframe infrastructure and services
+- **Operational Characteristics**: Runtime behavior, performance, and monitoring requirements
+
+## Analysis Approach
+
+### Phase 1: Program Discovery and Classification
+1. **Program Inventory**: Catalog all COBOL programs in the codebase
+2. **Program Classification**: Categorize by business domain, criticality, and complexity
+3. **Dependency Mapping**: Identify relationships between programs and external systems
+4. **Business Context Analysis**: Understand business processes supported by each program
+
+### Phase 2: Comprehensive Technical Analysis
+1. **Source Code Examination**: Line-by-line analysis of COBOL source code
+2. **Copybook Analysis**: Detailed examination of all included copybooks and data structures
+3. **JCL Integration**: Analysis of associated JCL and scheduling dependencies
+4. **Database Integration**: Complete analysis of DB2/IMS database interactions
+5. **File System Integration**: Comprehensive VSAM/QSAM file usage analysis
+
+### Phase 3: Business Logic Extraction
+1. **Business Rule Identification**: Extract all business rules embedded in program logic
+2. **Calculation Logic**: Document all mathematical and financial calculations
+3. **Decision Logic**: Map all conditional processing and business decisions
+4. **Validation Logic**: Identify all data validation and integrity checks
+5. **Exception Handling**: Document all error handling and business exception processing
+
+### Phase 4: Operational Analysis
+1. **Performance Characteristics**: Analyze processing volumes, timing, and resource usage
+2. **Integration Points**: Document all external system interfaces and dependencies
+3. **Security Analysis**: Identify security controls, access restrictions, and compliance requirements
+4. **Monitoring Requirements**: Document operational monitoring and alerting needs
+5. **Recovery Procedures**: Analyze error recovery and restart capabilities
+
+### Phase 5: Modernization Assessment
+1. **Migration Complexity**: Assess difficulty of modernizing each program component
+2. **API Opportunities**: Identify potential service boundaries and API conversion opportunities
+3. **Cloud Readiness**: Evaluate cloud migration feasibility and requirements
+4. **Microservices Decomposition**: Identify potential microservices boundaries
+5. **Technology Stack Mapping**: Map current technology to modern equivalents
+
+## Output Requirements
+
+### Two-File Analysis Approach
+
+For each COBOL program, create **TWO separate files** that complement each other:
+
+#### File 1: [PROGRAM-NAME]-comprehensive-analysis.md
+Complete technical and business analysis covering all 20 sections below.
+
+#### File 2: [PROGRAM-NAME]-flow.md  
+Execution timeline story that consolidates information from all sections in chronological order.
+
+### Primary Deliverable: Comprehensive Program Analysis Document
+
+For each COBOL program, create detailed documentation following this structure:
+
+```markdown
+# COBOL Program Analysis: [PROGRAM-NAME]
+
+## 1. Program Identification & Metadata
+- **Program Name**: [Program identifier]
+- **Author/Maintainer**: [From program header comments]
+- **Last Modified Date**: [Most recent modification]
+- **Program Description**: [Business purpose from comments and analysis]
+- **Program Type**: [Batch/Online/Subprogram]
+- **Business Domain**: [Accounting/Claims/Customer Management/etc.]
+- **Criticality Level**: [Critical/Important/Standard]
+- **Compliance Requirements**: [SOX/PCI-DSS/GDPR/etc.]
+- **Region/Class/Job Class**: [From associated JCL]
+- **Program Version**: [Release/version information]
+
+## 2. Technical Environment & Dependencies
+- **COBOL Version**: [Enterprise COBOL/COBOL II/VS COBOL/etc.]
+- **Compiler Directives**: [SSRANGE, NOSEQ, OPTIMIZE, etc.]
+- **INCLUDE/COPY Members**: [List with purposes]
+- **Copybook Dependencies**: [Detailed copybook analysis]
+- **Called Programs**: [Static and dynamic calls with entry points]
+- **DB2 Bindings**: [Database integration details]
+- **CICS Commands**: [If any CICS usage in batch]
+- **Utility Usage**: [SORT, ICETOOL, DFSORT, etc.]
+- **MQ Series Usage**: [Message queue integration]
+- **Web Services**: [SOAP/REST calls if any]
+- **Third-party Libraries**: [External library dependencies]
+- **Operating System Dependencies**: [z/OS, z/VSE specific features]
+- **Security Exits**: [RACF, ACF2, Top Secret usage]
+
+## 3. Data Dependencies
+
+### File Definitions
+| File Name | DD Name | Type | Access Mode | Organization | DISP | Key Fields | Purpose |
+|-----------|---------|------|-------------|--------------|------|------------|---------|
+| [File details with complete analysis] |
+
+### Database Tables
+| Table Name | Access Type | Columns Used | Cursors | Host Variables | Purpose |
+|------------|-------------|--------------|---------|----------------|---------|
+| [Database interaction details] |
+
+## 4. Input/Output Mapping
+- **Input Files/Feeds**: [Source formats, record layouts, validation logic]
+- **Output Files/Feeds**: [Formats, destinations, sorting logic]
+- **Report Generation**: [Headings, trailers, totals, formatting]
+- **Data Volume Expectations**: [Records per run, file sizes]
+- **Data Retention Requirements**: [Archive and purge policies]
+- **Archive/Purge Logic**: [Data lifecycle management]
+
+## 5. Business Logic Analysis
+- **Main Functional Flow**: [Narrative of business logic in English]
+- **Decision Rules**: [IF, EVALUATE, PERFORM logic breakdown]
+- **Calculations**: [Interest, penalties, balances, thresholds]
+- **Business Entities**: [Customer, Policy, Claim, Invoice entities]
+- **Status & Codes**: [Mapping of status fields to business meanings]
+- **Business Rule Catalog**: [Extracted business rules]
+- **Validation Rules**: [Data quality and integrity checks]
+- **Decision Tables**: [Complex decision logic documentation]
+
+## 6. Control Flow Analysis
+- **PERFORM Loops**: [Purpose and business context]
+- **Nested Logic**: [Complex control structures]
+- **GO TO/ALTER Usage**: [Legacy control flow patterns]
+- **Initialization Routines**: [Program startup logic]
+- **Cleanup Routines**: [Program termination logic]
+- **Error Handling**: [ON SIZE ERROR, INVALID KEY, WHEN OTHER]
+- **Checkpoint/Restart Logic**: [Recovery mechanisms]
+- **Transaction Boundaries**: [Business transaction definitions]
+- **Rollback/Recovery**: [Error recovery procedures]
+
+## 7. JCL & Scheduling Integration
+- **Associated JCL Members**: [Complete JCL analysis]
+- **JOB/STEP Structure**: [Job flow integration]
+- **DD Statements**: [Input/output dataset definitions]
+- **Parameters**: [SYSIN, overrides, runtime parameters]
+- **Scheduler Information**: [CA7/Control-M integration]
+- **Job Dependencies**: [Predecessors/successors]
+- **Run Frequency**: [Daily/monthly/ad-hoc scheduling]
+- **Resource Requirements**: [CPU, memory, storage needs]
+- **Processing Windows**: [SLA requirements and constraints]
+- **Parallel Processing**: [Concurrent execution capabilities]
+
+## 8. Data Layouts & Structures
+- **Copybook Details**: [Fields, types, lengths, structures]
+- **Group/Item Hierarchies**: [Data organization]
+- **REDEFINES Usage**: [Alternative data views]
+- **OCCURS Clauses**: [Array and table structures]
+- **Data Types**: [PACKED/COMP-3, DISPLAY, BINARY usage]
+- **Field Relationships**: [Data dependencies and constraints]
+
+## 9. Data Transformations
+- **Mapping Logic**: [Input field → Output field transformations]
+- **Field Derivations**: [Calculated field logic]
+- **Date/Time Logic**: [Date handling and conversions]
+- **Data Quality Rules**: [Cleansing and validation logic]
+- **Business Rule Validations**: [Rule enforcement mechanisms]
+- **Data Enrichment**: [Data enhancement and augmentation]
+
+## 10. Error & Exception Handling
+- **Custom Error Codes**: [Program-specific error handling]
+- **Error Logs/Audit Trails**: [Error recording mechanisms]
+- **Abend Recovery**: [Abnormal termination handling]
+- **Retry/Reprocess Logic**: [Error recovery procedures]
+- **Missing/Corrupt Input Handling**: [Data quality issue resolution]
+- **Error Notification**: [Alert and notification mechanisms]
+- **Business Exception Processing**: [Business rule violation handling]
+
+## 11. Testing & Debugging Capabilities
+- **DUMP/DISPLAY Statements**: [Debug output mechanisms]
+- **Conditional Compilation**: [Environment-specific code]
+- **Debug Modes**: [Testing and troubleshooting features]
+- **Trace/Audit Trails**: [Execution tracking capabilities]
+
+## 12. Program Outputs
+- **Reports**: [Business meaning and structure of each section]
+- **Files/Feeds**: [Output formats and destination systems]
+- **Messages**: [Standard and custom messages issued]
+- **Notifications**: [Alert and communication outputs]
+
+## 13. Metrics & Performance Counters
+- **Record Counters**: [Processing volume tracking]
+- **Totals/Statistics**: [Batch processing metrics]
+- **Performance Metrics**: [Execution time and resource usage]
+- **Business KPIs**: [Key performance indicator calculations]
+- **Audit Trail Counters**: [Compliance and tracking metrics]
+
+## 14. Security & Compliance
+- **Security Classifications**: [Data sensitivity levels]
+- **Access Controls**: [Execution and modification permissions]
+- **Audit Requirements**: [Regulatory audit trail needs]
+- **Data Privacy**: [PII/PHI handling requirements]
+- **Encryption Requirements**: [Data protection needs]
+- **Compliance Mappings**: [SOX, GDPR, PCI-DSS controls]
+
+## 15. Performance & Scalability
+- **Processing Volumes**: [Current and projected data volumes]
+- **Performance Benchmarks**: [Typical execution times]
+- **Resource Utilization**: [CPU, memory, I/O patterns]
+- **Bottleneck Analysis**: [Performance constraints]
+- **Scalability Limits**: [Maximum processing capacity]
+- **Optimization Opportunities**: [Performance improvement areas]
+
+## 16. Integration & Interfaces
+- **Upstream Systems**: [Data sources and dependencies]
+- **Downstream Systems**: [Data consumers and targets]
+- **Interface Protocols**: [File transfer, messaging, APIs]
+- **Data Formats**: [EDI, XML, JSON, fixed-width formats]
+- **Synchronization Requirements**: [Real-time vs batch processing]
+- **Interface Error Handling**: [Failure recovery mechanisms]
+
+## 17. Data Lineage & Governance
+- **Data Sources**: [Origin of input data]
+- **Data Transformations**: [How data is modified through processing]
+- **Data Destinations**: [Where processed data goes]
+- **Data Quality Controls**: [Validation and cleansing mechanisms]
+- **Data Retention Policies**: [Archival and purge requirements]
+- **Data Classification**: [Sensitivity and handling requirements]
+
+## 18. Operational Characteristics
+- **Monitoring Requirements**: [What needs operational monitoring]
+- **Alerting Rules**: [When to generate operational alerts]
+- **Recovery Procedures**: [How to recover from various failures]
+- **Maintenance Windows**: [When maintenance can be performed]
+- **Capacity Planning**: [Growth projections and scaling needs]
+- **Disaster Recovery**: [Backup and recovery requirements]
+
+## 19. Migration Analysis
+- **Unsupported Features**: [COBOL features requiring modernization]
+- **Refactoring Needs**: [Code structure improvements needed]
+- **External Dependencies**: [System integration challenges]
+- **API Conversion Opportunities**: [Service boundary identification]
+- **Microservices Decomposition**: [Service separation possibilities]
+- **Cloud Migration Considerations**: [Cloud readiness assessment]
+- **Real-time Processing Opportunities**: [Batch-to-real-time conversion potential]
+
+## 20. SME Review Checklist
+- **Business Logic Accuracy**: [Verification points for business rules]
+- **Technical Implementation**: [Verification points for technical details]
+- **Integration Dependencies**: [Verification points for system interfaces]
+- **Performance Characteristics**: [Verification points for operational behavior]
+- **Security Requirements**: [Verification points for compliance and security]
+- **Migration Readiness**: [Verification points for modernization planning]
+```
+
+### Secondary Deliverable: Program Flow Document
+
+Create a separate file: **[PROGRAM-NAME]-flow.md**
+
+This file consolidates execution-related information from ALL sections of the comprehensive analysis into a single chronological narrative that follows the actual program execution timeline.
+
+```markdown
+# Program Flow Analysis: [PROGRAM-NAME]
+
+## Executive Summary
+- **Program Purpose**: [Brief business purpose]
+- **Processing Type**: [Batch/Online/Real-time]
+- **Key Business Function**: [Primary business capability]
+- **Critical Dependencies**: [Essential files, databases, systems]
+
+## Complete Execution Timeline Story
+
+### 1. Program Initialization Phase
+**What happens when the program starts**
+
+Consolidate information from sections: Technical Environment, JCL Integration, Data Dependencies
+
+- **JCL Parameter Processing**: [How parameters are received and processed]
+- **File Opening Sequence**: [Order and method of file/database connections]
+- **Memory Allocation**: [Working storage initialization, copybook loading]
+- **Environment Setup**: [System resources, security context establishment]
+- **Initial Validation**: [Parameter validation, file availability checks]
+
+**Code Example:**
+```cobol
+[Include relevant initialization code snippets with line numbers]
+```
+
+**Key Variables Initialized:**
+- `[VARIABLE-NAME]`: [Purpose and initial value]
+- `[VARIABLE-NAME]`: [Purpose and initial value]
+
+### 2. Main Processing Loop
+**How the program processes data from start to finish**
+
+Consolidate information from sections: Business Logic, Control Flow, Data Transformations
+
+- **Input Data Reading**: [How records are read, in what order]
+- **Record Type Identification**: [How different record types are detected]
+- **Business Rule Application**: [When and how business rules are applied]
+- **Calculation Sequence**: [Order of mathematical operations and business calculations]
+- **Decision Points**: [Key business decisions and their triggers]
+- **Data Validation**: [Validation rules applied during processing]
+- **Error Detection**: [How errors are identified during processing]
+
+**Code Example:**
+```cobol
+[Include main processing loop code snippets with line numbers]
+```
+
+**Key Processing Variables:**
+- `[VARIABLE-NAME]`: [Role in processing, how it changes]
+- `[VARIABLE-NAME]`: [Role in processing, how it changes]
+
+### 3. Business Logic Execution
+**The sequence of business operations in plain English**
+
+Consolidate information from sections: Business Logic, Data Transformations, Business Rules
+
+- **Business Entity Processing**: [How customers, accounts, transactions are handled]
+- **Calculation Logic**: [Step-by-step calculation processes]
+- **Business Rule Enforcement**: [How business rules are checked and enforced]
+- **Status Code Management**: [How status fields are set and used]
+- **Cross-Reference Resolution**: [How related data is looked up and linked]
+
+**Code Example:**
+```cobol
+[Include business logic code snippets with line numbers]
+```
+
+**Business Variables:**
+- `[BUSINESS-FIELD]`: [Business meaning and usage]
+- `[BUSINESS-FIELD]`: [Business meaning and usage]
+
+### 4. Data Output Generation
+**How the program creates its outputs**
+
+Consolidate information from sections: Program Outputs, Data Transformations, Integration
+
+- **Output Record Creation**: [How output records are built]
+- **Report Generation**: [Report formatting and content creation]
+- **File Writing Sequence**: [Order of output file creation]
+- **Database Updates**: [How database changes are made]
+- **Audit Trail Creation**: [How audit records are generated]
+
+**Code Example:**
+```cobol
+[Include output generation code snippets with line numbers]
+```
+
+**Output Variables:**
+- `[OUTPUT-FIELD]`: [Purpose and content]
+- `[OUTPUT-FIELD]`: [Purpose and content]
+
+### 5. Error Handling Throughout Execution
+**How the program handles problems at each stage**
+
+Consolidate information from sections: Error Handling, Testing & Debugging, Operational Characteristics
+
+- **Error Detection Points**: [Where errors can occur in the flow]
+- **Error Response Actions**: [What the program does when errors occur]
+- **Recovery Mechanisms**: [How the program attempts to recover]
+- **Error Logging**: [How errors are recorded]
+- **Abend Conditions**: [What causes the program to terminate abnormally]
+
+**Code Example:**
+```cobol
+[Include error handling code snippets with line numbers]
+```
+
+### 6. Program Completion and Cleanup
+**How the program finishes and cleans up**
+
+Consolidate information from sections: Control Flow, Program Outputs, Operational Characteristics
+
+- **Processing Completion Detection**: [How the program knows it's done]
+- **Final Calculations**: [End-of-job totals and summaries]
+- **File Closing Sequence**: [Order of file and database disconnections]
+- **Final Reports**: [Summary reports and statistics generated]
+- **Resource Cleanup**: [Memory deallocation, temporary file cleanup]
+- **Return Code Setting**: [How success/failure is communicated]
+
+**Code Example:**
+```cobol
+[Include completion code snippets with line numbers]
+```
+
+## Key Execution Characteristics
+
+### Performance Profile
+- **Typical Processing Volume**: [Records processed per run]
+- **Execution Time**: [Normal runtime duration]
+- **Resource Usage**: [CPU, memory, I/O patterns]
+- **Bottleneck Points**: [Where performance issues typically occur]
+
+### Integration Touch Points
+- **Upstream Dependencies**: [What must complete before this program runs]
+- **Downstream Impact**: [What depends on this program's completion]
+- **Real-time Interfaces**: [Any real-time system interactions]
+- **Batch Window Requirements**: [When this program must run]
+
+### Critical Success Factors
+- **Data Quality Requirements**: [What data quality is essential]
+- **Business Rule Compliance**: [Critical business rules that must be enforced]
+- **Audit Trail Completeness**: [Essential audit requirements]
+- **Error Recovery Capabilities**: [Critical error handling requirements]
+
+## Modernization Flow Considerations
+
+### API Conversion Opportunities
+- **Service Boundary Points**: [Where APIs could be introduced]
+- **Stateless Processing Segments**: [Parts suitable for microservices]
+- **Real-time Conversion Potential**: [Batch steps that could become real-time]
+
+### Cloud Migration Flow Impact
+- **Containerization Readiness**: [How execution flow affects containerization]
+- **Scalability Points**: [Where horizontal scaling could be applied]
+- **State Management**: [How program state affects cloud deployment]
+
+```
+
+**Writing Guidelines for Flow Document:**
+- **Chronological Order**: Follow actual execution sequence, not code organization
+- **Plain English**: Use business language, avoid technical COBOL terms
+- **Code Integration**: Include relevant code snippets with line numbers for verification
+- **Variable Context**: Explain what variables do in business terms
+- **Cross-Section Integration**: Pull related information from all 20 analysis sections
+- **SME Readability**: Make it easy for business SMEs to follow the execution story
+- **Complete Timeline**: Cover every major phase from startup to completion
+- **Business Focus**: Emphasize business logic and decisions over technical implementation
+
+### Supporting Deliverables
+
+#### 1. Program Dependency Matrix
+Cross-reference matrix showing relationships between programs, files, databases, and external systems.
+
+#### 2. Business Process Integration Map
+Visual representation of how each program fits into broader business workflows.
+
+#### 3. Modernization Readiness Assessment
+Detailed analysis of modernization complexity, risks, and opportunities for each program.
+
+#### 4. SME Review Summary
+Executive summary highlighting key findings, risks, and recommendations for SME attention.
+
+## Quality Requirements
+
+### Completeness Standards
+- **100% Code Coverage**: Every line of COBOL code analyzed and documented
+- **Complete Dependency Mapping**: All program, file, and system dependencies identified
+- **Full Business Logic Extraction**: All business rules, calculations, and decisions documented
+- **Comprehensive Integration Analysis**: All external interfaces and dependencies mapped
+
+### Accuracy Standards
+- **Source Code Verification**: All analysis verified against actual COBOL source code
+- **Cross-Reference Validation**: All dependencies verified through multiple sources
+- **Business Context Accuracy**: All business descriptions aligned with actual program functionality
+- **Technical Detail Precision**: All technical specifications accurately captured
+
+### Documentation Standards
+- **SME-Ready Format**: Documentation structured for expert review and validation
+- **Business Language**: Technical details explained in business terms where appropriate
+- **Consistent Structure**: Standardized format across all program analyses
+- **Complete Cross-References**: All relationships and dependencies clearly documented
+
+### Analysis Depth Requirements
+- **Multi-Level Analysis**: Program, paragraph, and statement-level analysis where needed
+- **Business Process Integration**: Programs analyzed within broader business context
+- **Operational Context**: Runtime behavior and operational characteristics documented
+- **Modernization Focus**: All analysis oriented toward modernization planning needs
+
+## Success Criteria
+
+### Quantitative Measures
+- **Complete Program Inventory**: 100% of COBOL programs analyzed and documented
+- **Dependency Coverage**: All program dependencies identified and verified
+- **Business Rule Extraction**: All embedded business logic documented
+- **Integration Mapping**: All external system interfaces documented
+
+### Qualitative Measures
+- **SME Approval Readiness**: Documentation detailed enough for expert validation
+- **Business Logic Preservation**: All critical business rules accurately captured
+- **Modernization Planning Support**: Analysis provides foundation for migration decisions
+- **Risk Identification**: All potential modernization risks and challenges identified
+
+### SME Review Criteria
+- **Technical Accuracy**: COBOL SMEs can validate all technical details
+- **Business Logic Completeness**: Business SMEs can verify all business rules
+- **Integration Accuracy**: System SMEs can validate all interface dependencies
+- **Operational Completeness**: Operations SMEs can verify all runtime characteristics
+
+### Modernization Readiness
+- **Architecture Planning**: Analysis supports modern architecture design decisions
+- **Risk Assessment**: All migration risks identified and documented
+- **Opportunity Identification**: All modernization opportunities clearly identified
+- **Implementation Planning**: Analysis provides foundation for detailed migration planning
+
+### Documentation Quality
+- **Professional Standards**: Documentation meets enterprise documentation standards
+- **Review Efficiency**: SMEs can efficiently review and validate analysis
+- **Decision Support**: Analysis enables informed modernization decisions
+- **Knowledge Transfer**: Documentation supports knowledge transfer to modern development teams
+
+## Analysis Validation Process
+
+### Technical Validation
+1. **Code Cross-Reference**: Verify all code references and line numbers
+2. **Dependency Verification**: Confirm all program and system dependencies
+3. **Logic Flow Validation**: Verify all control flow and business logic documentation
+4. **Integration Testing**: Validate all external interface documentation
+
+### Business Validation
+1. **Business Rule Verification**: Confirm all business logic extraction
+2. **Process Integration**: Validate business process context and integration
+3. **Stakeholder Review**: Business SME validation of business logic documentation
+4. **Compliance Verification**: Confirm all regulatory and compliance requirements
+
+### Operational Validation
+1. **Performance Verification**: Validate all performance and scalability documentation
+2. **Monitoring Confirmation**: Verify all operational monitoring requirements
+3. **Recovery Validation**: Confirm all error handling and recovery procedures
+4. **Capacity Verification**: Validate all resource and capacity requirements
+
+This comprehensive analysis approach ensures that COBOL SMEs receive complete, accurate, and actionable documentation that supports confident modernization decisions while preserving critical business functionality and operational requirements.
