@@ -19,11 +19,80 @@ You have to pick the codebase from the 00.phase-1-input folder of the attached r
 Business entities represent real-world concepts that exist in the business domain:
 
 **Universal Business Entity Patterns:**
-- **PERSONAS**: People, organizations, or roles that interact with the business (Users, Customers, Employees, Vendors, Patients, Students, etc.)
-- **OBJECTS**: Things, assets, or resources the business manages (Products, Accounts, Policies, Orders, Inventory, Equipment, etc.)
-- **EVENTS**: Business activities or transactions that occur (Purchases, Claims, Appointments, Enrollments, Shipments, etc.)
-- **METADATA**: Business rules, classifications, or organizational structures (Categories, Types, Statuses, Policies, Procedures, etc.)
-- **RELATIONSHIPS**: Associations between business entities (Ownership, Participation, Dependencies, Hierarchies, etc.)
+
+### **PERSONAS**: People, Organizations, or Roles
+**Definition**: People, organizations, or roles that interact with the business system
+**Examples**: Users, Customers, Employees, Vendors, Patients, Students, Administrators, Partners, Contractors
+**Key Characteristics**:
+- Represent human actors or organizational entities that interact with the business
+- Have identity, roles, and permissions within the business context
+- Drive business activities and decision-making processes
+- Can be internal (employees, admins, operators) or external (customers, vendors, partners)
+- Often have authentication, authorization, and access control requirements
+- Participate in business processes and workflows
+
+**Business Recognition Test**: "Is this a person, group, or role that business stakeholders would recognize as interacting with our operations?"
+**Stakeholder Test**: "Would business users care about tracking and managing this type of person or role?"
+
+### **OBJECTS**: Things, Assets, or Resources
+**Definition**: Things, assets, or resources the business manages, owns, or controls
+**Examples**: Products, Accounts, Policies, Orders, Inventory, Equipment, Contracts, Documents, Assets
+**Key Characteristics**:
+- Represent business assets with inherent value or operational importance
+- Have clear ownership or management relationships ("belongs to" another entity)
+- Are actively managed through business processes and lifecycle states
+- Generate or support revenue streams and business operations
+- Have measurable business impact and operational significance
+- Can be physical assets, digital resources, or conceptual business objects
+
+**Ownership Test**: "Does this entity have a clear 'belongs to' relationship with another business entity?"
+**Business Asset Test**: "Does the business own, manage, or control this as a valuable resource?"
+**Value Test**: "Would losing or mismanaging this entity have measurable business impact?"
+
+### **EVENTS**: Business Activities or Transactions
+**Definition**: Business activities, transactions, or processes that occur over time
+**Examples**: Purchases, Claims, Appointments, Enrollments, Shipments, Payments, Approvals, Transactions
+**Key Characteristics**:
+- Represent business activities that happen at specific points in time
+- Often trigger changes in other business entities and system states
+- Have temporal aspects (start time, end time, duration, sequence)
+- Generate business value, operational outcomes, or state changes
+- Can be one-time events, recurring processes, or workflow steps
+- Often involve multiple personas and objects in coordinated activities
+
+**Activity Test**: "Does this represent something that happens in the business rather than something that exists?"
+**Temporal Test**: "Does this have a clear beginning and potentially an end time?"
+**Impact Test**: "Does this event cause changes to other business entities or business state?"
+
+### **METADATA**: Business Rules, Classifications, or Organizational Structures
+**Definition**: Business rules, classifications, categories, or organizational structures that define how the business operates
+**Examples**: Categories, Types, Statuses, Policies, Procedures, Classifications, Hierarchies, Business Rules, Taxonomies
+**Key Characteristics**:
+- Define how the business organizes, categorizes, and structures information
+- Provide meaning, context, and classification to other business entities
+- Enable consistent processing, reporting, and business intelligence
+- Relatively stable but evolve with changing business needs and requirements
+- Support business decision-making through standardized categorization
+- Often used for compliance, reporting, and operational consistency
+
+**Classification Test**: "Does this help organize, categorize, or define rules for other business entities?"
+**Stability Test**: "Is this relatively stable organizational information rather than transactional data?"
+**Structure Test**: "Does this provide meaning or context to other business entities?"
+
+### **RELATIONSHIPS**: Associations Between Business Entities
+**Definition**: Associations, connections, or dependencies between different business entities
+**Examples**: Ownership, Participation, Dependencies, Hierarchies, Memberships, Associations, Cross-References
+**Key Characteristics**:
+- Connect two or more business entities in meaningful ways
+- Define how entities interact, depend on each other, or relate operationally
+- Often represent complex many-to-many relationships requiring explicit modeling
+- Enable sophisticated business scenarios and flexible operational models
+- Support business scalability and adaptability to changing requirements
+- May have their own attributes (relationship dates, status, conditions)
+
+**Connection Test**: "Does this primarily exist to connect or relate other business entities?"
+**Complexity Test**: "Does this enable complex business relationships that couldn't be modeled with simple foreign keys?"
+**Business Value Test**: "Does this relationship support important business operations or decisions?"
 
 ❌ **EXCLUDE: Technical Data Structures**
 Technical data that supports system operation but lacks business meaning:
