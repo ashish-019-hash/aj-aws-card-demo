@@ -46,6 +46,29 @@ Processing Artifacts: (for example : Loop counters, array indices, technical pro
 
 Infrastructure Data: (for example : Connection data, system status, technical logging data etc)
 
+### Entity Scale and Business Relevance Criteria
+**Minimum Entity Thresholds:**
+- Minimum Record Count: Entities should have potential for >50 records in production
+- Exclude Small Static Tables: Configuration tables with <20 static records (e.g., menu options, small lookup tables)
+- Growth Potential: Entity should grow with business operations, not remain static
+
+**Object Classification Requirements:**
+- Clear Ownership Model: Objects must have clear "belongs to" relationships (e.g., Card belongs to Customer)
+- Business Asset: Must represent something the business owns, manages, or controls
+- Configuration vs Object: Static configuration data should be classified as Metadata, not Object
+
+**Business Relevance Tests:**
+- Business Recognition: "Would business stakeholders recognize this as a core business concept?"
+- Operational Growth: "Does this entity grow as business operations expand?"
+- Active Management: "Is this actively managed by business processes and decisions?"
+- Cross-Domain Value: "Would this concept exist in other similar businesses?"
+
+**System Configuration Exclusions:**
+- Menu Options: Screen navigation and UI configuration data
+- Static Lookups: Small reference tables that rarely change
+- Technical Parameters: System settings without direct business context
+- Processing Controls: Technical flags and system control data
+
 ### 3-Phase Methodology
 ** Phase 1: Initial Discovery (Enhanced)
 1. Finding business entities
