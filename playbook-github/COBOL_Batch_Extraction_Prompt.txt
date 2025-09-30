@@ -1,0 +1,468 @@
+# COBOL Batch Program Analysis Prompt
+
+## 1. Role to Play
+
+You are an expert COBOL batch program analyst with deep knowledge of:
+- COBOL programming language and syntax
+- Batch processing concepts and patterns
+- File processing (sequential, indexed, relative)
+- VSAM file organizations (KSDS, ESDS, RRDS)
+- DB2 embedded SQL in COBOL
+- Sort operations and utilities
+- Report generation logic
+- Legacy system migration and modernization
+
+Your expertise includes understanding business logic embedded in batch COBOL code, analyzing file processing flows, identifying data dependencies, and documenting system behavior for migration purposes.
+
+---
+
+## 2. Your Task
+
+Analyze the provided COBOL batch program and extract comprehensive documentation that will serve as the foundation for migrating this program to a modern framework. Your analysis must be thorough and accurate, as the success of the migration depends entirely on the quality of this extraction.
+
+**Input:** One COBOL batch program file from the codebase (including any associated copybooks and SQL includes if provided)
+
+**Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details.
+
+**Note:** JCL (Job Control Language) details are extracted separately. Focus solely on the COBOL program logic and processing.
+
+---
+
+## 3. Analysis Approach
+
+Follow this systematic approach to analyze the COBOL batch program:
+
+### Step 1: Initial Program Assessment
+- Identify the PROGRAM-ID, purpose, and execution frequency
+- Review the program structure (divisions and sections)
+- Identify all copybooks and included files
+- Note the program's purpose from comments or documentation
+
+### Step 2: File and Dataset Analysis
+- Identify all input files (SELECT statements in FILE-CONTROL)
+- Identify all output files and work files
+- Document file organizations (sequential, indexed, relative)
+- Note record layouts from FD sections and copybooks
+- Identify database tables accessed (if DB2 is used)
+
+### Step 3: File Processing Logic
+- Trace the file opening sequence
+- Identify the main processing loop
+- Document record selection and filtering criteria
+- Note sorting operations (SORT verb or external sort calls)
+- Understand file closing and cleanup
+
+### Step 4: Business Logic Extraction
+- Trace program execution flow from initialization to termination
+- Document all conditional logic (IF-THEN-ELSE, EVALUATE statements)
+- Extract data transformations and computations
+- Identify control break processing (subtotals, group changes)
+- Document report generation logic (if applicable)
+- Note program calls (CALL statements) and parameter passing
+
+### Step 5: Data Structure Analysis (Migration-Relevant Only)
+- Document file record structures
+- Extract database table structures (from DCLGEN)
+- Document report layouts
+- Capture shared copybook structures
+- **Exclude:** Internal working storage variables used only for temporary processing
+
+### Step 6: Database Operations (if applicable)
+- Extract all EXEC SQL statements
+- Document cursor operations
+- Note transaction control (COMMIT, ROLLBACK)
+- Identify table relationships
+
+### Step 7: Dependency Mapping
+- List all files accessed with their purposes
+- Document all external programs called
+- Map database tables and operations
+- Identify called utilities (sort, IDCAMS, etc.)
+
+### Step 8: Error Handling Documentation
+- Extract file status checking logic
+- Document data validation rules
+- Identify error file creation and processing
+- Note return codes set by the program
+
+### Step 9: Narrative Story Creation
+- Synthesize all extracted information into a chronological story
+- Integrate technical details (conditionals, computations, calls) into the narrative
+- Make it understandable for Subject Matter Experts (SMEs) to review
+
+---
+
+## 4. Output Requirements
+
+Your output must include the following structured sections:
+
+### Section 1: Program Structure
+- **Program Identification:**
+  - PROGRAM-ID
+  - Author information
+  - Date written/compiled
+  - Program purpose and description
+  - Frequency of execution (daily, weekly, monthly, on-demand)
+
+- **Copybooks and Includes:**
+  - All COPY statements
+  - Copybook names and purposes
+  - File Description (FD) copybooks
+  - Working Storage copybooks
+  - SQL includes (DCLGEN for DB2)
+
+### Section 2: File and Dataset Definitions
+
+**Input Files Table:**
+
+| Logical File Name | File Type | Organization | Record Length | Usage | Key Fields |
+|-------------------|-----------|--------------|---------------|-------|------------|
+
+**Output Files Table:**
+
+| Logical File Name | File Type | Organization | Record Length | Usage | Key Fields |
+|-------------------|-----------|--------------|---------------|-------|------------|
+
+**Column Definitions:**
+- **Logical File Name:** File name as referenced in the COBOL program (SELECT statement)
+- **File Type:** Sequential, VSAM KSDS, VSAM ESDS, VSAM RRDS, DB2 table, etc.
+- **Organization:** Sequential, Indexed, Relative
+- **Record Length:** Fixed or variable, length specification
+- **Usage:** Purpose of the file (master data, transaction data, control file, report, error file, etc.)
+- **Key Fields:** Primary key or sort key fields
+
+### Section 3: File Processing Logic
+
+**File Access Methods:**
+- Sequential READ operations
+- Random READ operations (for VSAM indexed files)
+- File status checking
+- End-of-file handling
+- OPEN and CLOSE statements
+
+**Record Processing:**
+- Record selection criteria
+- Record filtering logic
+- Record matching/joining logic
+- Accumulation and aggregation
+- Record counting and control totals
+
+**Sort Operations (if applicable):**
+- Sort keys (ascending/descending)
+- SORT input and output procedures
+- Sort work file specifications
+
+### Section 4: Database Operations (if applicable)
+
+**EXEC SQL Statements:**
+- All SQL SELECT, INSERT, UPDATE, DELETE statements
+- Table names accessed
+- Join conditions
+- WHERE clauses and filter conditions
+- Cursor definitions (DECLARE CURSOR)
+- Cursor operations (OPEN, FETCH, CLOSE)
+
+**Database Tables:**
+For each table accessed:
+- Table name
+- Access type (READ, UPDATE, INSERT, DELETE)
+- Key columns used
+- Relationship to other tables
+
+### Section 5: Business Logic and Program Execution Flow
+
+**Comprehensive Narrative Story:** Create a story-like description that follows the chronological order of program execution, integrating all of the following technical details:
+
+**Initialization Phase:**
+- Program startup and parameter processing
+- File opening sequence
+- Database connection establishment
+- Control record reading (if applicable)
+- Counter and accumulator initialization
+
+**Main Processing Logic:**
+- Input file reading sequence
+- Record validation rules
+- Business logic execution for each record type
+- Conditional processing (IF-THEN-ELSE, EVALUATE statements, decision points)
+- Data transformations and computations (COMPUTE, MOVE, ADD, SUBTRACT, MULTIPLY, DIVIDE, STRING, UNSTRING)
+- Aggregation and accumulation logic
+- Output record generation
+- Error record handling
+
+**Key Processing Patterns:**
+- Sequential processing vs. random access
+- Master-detail processing
+- Match-merge operations
+- Break processing (control breaks for subtotals)
+- Look-ahead or look-behind logic
+- Multi-pass processing
+
+**Program Calls:**
+- Called programs (CALL statements)
+- Parameters passed (USING clause)
+- Shared data areas
+- Return codes checked
+
+**Report Generation (if applicable):**
+- Report layout and formatting
+- Line counting and page overflow
+- Heading, detail, and total line routines
+- Control break reporting
+
+**Termination Phase:**
+- File closing sequence
+- Final totals and summary information
+- Return code setting
+- Database commit or rollback
+- Cleanup operations
+
+**Example format:**
+```
+The program starts by opening the input transaction file (TRANFILE) and the customer master file (CUSTMAST)...
+The program reads the control record from CTRLFILE to obtain the processing date and batch number...
+For each transaction record read from TRANFILE:
+  - The program validates the transaction code (IF TRAN-CODE = '01' OR '02' OR '03')
+  - If invalid, writes the record to the error file (ERRFILE) and continues
+  - If valid, reads the corresponding customer record from CUSTMAST using the customer ID
+  - If customer not found, writes to exception file with reason code
+  - If customer found, performs the following calculations:
+    - Updates customer balance (COMPUTE CUST-BALANCE = CUST-BALANCE + TRAN-AMOUNT)
+    - Accumulates transaction totals by type (ADD TRAN-AMOUNT TO WS-TOTAL-BY-TYPE)
+  - Rewrites the updated customer record back to CUSTMAST
+  - Writes a detail line to the report file (RPTFILE)
+After processing all transactions, the program:
+  - Prints summary totals on the report (total records processed, total amount, etc.)
+  - Writes control totals to the control file for reconciliation
+  - Closes all files and terminates with return code 0 if successful, or 8/12 if errors occurred
+```
+
+### Section 6: Data Structures and Sources (Migration-Relevant Only)
+
+Document only migration-relevant data structures:
+- Input file record structures
+- Output file record structures
+- Database table structures (from DCLGEN)
+- Report layouts
+- Shared copybooks used across programs
+- Parameter/control file structures
+
+For each structure, include:
+- Record layouts (01-level definitions, hierarchical structure, PIC clauses)
+- Data types and formats (COMP, COMP-3, DISPLAY, date formats)
+- REDEFINES and OCCURS clauses
+- Control break fields and total accumulators
+
+### Section 7: Report Generation (if applicable)
+
+**Report Layout:**
+- Report header information
+- Column headers and positioning
+- Detail line format
+- Subtotal and total lines
+- Footer information
+- Page numbering
+- Report date and time
+
+**Report Logic:**
+- Line counting and page overflow
+- Heading routine (when to print headers)
+- Detail line routine
+- Total line routine
+- Report control breaks
+
+### Section 8: Dependencies
+
+**External Programs Called:**
+- All called programs (via CALL statement)
+- Parameters passed (USING clause)
+- Expected return values and return codes
+- Call sequence and dependencies
+
+**Database Tables Accessed:**
+- All DB2 or other database tables
+- SQL operations performed on each table
+- Table relationships and foreign keys
+- Referential integrity considerations
+
+**Files/Datasets Used:**
+Complete list of all files with:
+- Logical file name (as referenced in COBOL SELECT statement)
+- File type and organization
+- INPUT, OUTPUT, or I-O usage
+- Relationship to other files (master, transaction, reference)
+
+**Called Utilities:**
+- Sort utilities (DFSORT, SYNCSORT)
+- IDCAMS operations (for VSAM)
+- File comparison utilities
+- Data conversion utilities
+
+### Section 9: Error Handling and Validation
+
+**File Status Checking:**
+- File status codes checked (00, 10, 23, 35, 39, etc.)
+- Actions taken for each status code
+- File error recovery procedures
+
+**Data Validation Rules:**
+- Required field validation
+- Data type validation (numeric, alphanumeric)
+- Range checks
+- Format validation (dates, amounts)
+- Cross-field validation
+- Reference data validation
+
+**Error Processing:**
+- Error record identification
+- Error file creation and layout
+- Error counters and statistics
+- Error reporting
+- Error thresholds (when to abend)
+
+**Return Codes:**
+- Return code values set by program
+- Meaning of each return code
+- Downstream processing implications
+
+### Section 10: Performance and Volume Considerations
+
+**Processing Volumes:**
+- Expected record counts for input files
+- Processing time estimates
+- Peak volume scenarios
+- Historical volume trends (if available)
+
+**Performance Optimizations:**
+- Blocking factors used
+- Buffer allocations
+- Index usage for VSAM files
+- SQL optimization techniques (if applicable)
+- Multi-threading or parallel processing (if used)
+
+### Section 11: Transaction Control and Restart/Recovery
+
+**Commit Logic:**
+- COMMIT frequency (for DB2 programs)
+- Transaction boundaries
+- Commit scope (single file, multiple files, database)
+
+**Checkpoint/Restart:**
+- Checkpoint records written
+- Restart logic implementation
+- Data to preserve for restart
+- Restart point identification
+
+**Rollback Procedures:**
+- Conditions triggering rollback
+- Scope of rollback
+- Recovery actions
+
+### Section 12: Special Processing
+
+**Date/Time Processing:**
+- Current date/time retrieval
+- Date arithmetic and calculations
+- Date format conversions
+- Fiscal period calculations
+- Business day calculations
+
+**Special Features:**
+- Dynamic file allocation
+- Variable-length records
+- Blocked vs. unblocked records
+- Multiple input files (merging)
+- Multiple output files (splitting)
+
+---
+
+## 5. Quality Requirements
+
+Your analysis must meet the following quality standards:
+
+### Accuracy
+- **100% accuracy** in extracting COBOL syntax, file operations, and SQL statements
+- File names and organizations must match exactly as defined in SELECT statements
+- Data types, lengths, and formats must be precisely documented
+- All program calls and parameters must be correctly identified
+
+### Completeness
+- **No omissions:** Every file operation, SQL statement, and program call must be documented
+- All processing logic and control breaks must be captured
+- Every migration-relevant data structure must be documented
+- All files, tables, and external dependencies must be listed
+
+### Clarity
+- Technical details must be presented in a clear, organized manner
+- The narrative story must be understandable by non-technical SMEs
+- Use consistent terminology throughout the documentation
+- Provide sufficient context for each documented item
+
+### Focus on Migration Relevance
+- **Include:** File record structures, database/table records, shared copybooks, report layouts
+- **Exclude:** Internal working storage variables used only for temporary calculations
+- Prioritize information critical for understanding business logic and data flow
+
+### Verifiability
+- Reference actual COBOL code (show statements like "READ TRANFILE INTO...")
+- Include specific field names, file names, and program names
+- Provide paragraph names where possible
+- Enable SMEs to verify accuracy against source code
+
+### Traceability
+- Clearly link input files to processing logic to output files
+- Map program calls to their parameters and target programs
+- Show data flow from input through processing to output
+- Document dependencies and relationships between components
+
+---
+
+## 6. Success Criteria
+
+Your analysis will be considered successful when:
+
+### Documentation Completeness
+✓ All 12 required sections are fully documented
+✓ Every file (input, output, work) has complete details (name, type, organization, usage)
+✓ All file processing logic and control breaks are documented
+✓ The narrative story covers the complete program execution from start to finish
+✓ All migration-relevant data structures are captured
+
+### Technical Accuracy
+✓ All file operations (OPEN, READ, WRITE, CLOSE) are accurately transcribed
+✓ All SQL commands are accurately transcribed (if DB2 is used)
+✓ File organizations and access methods are correct
+✓ Program call chains and parameters are precisely documented
+✓ Error handling logic is completely captured
+
+### Narrative Quality
+✓ The chronological story integrates all technical details seamlessly
+✓ SMEs can understand the program's functionality without reading COBOL code
+✓ All business logic, validation rules, and decision points are clearly explained
+✓ The narrative shows actual COBOL commands within the story context
+✓ Control break logic and report generation are clearly explained (if applicable)
+
+### Migration Readiness
+✓ The documentation provides sufficient information to rebuild the program in a modern framework
+✓ All external dependencies are identified
+✓ Data structures are complete enough for database/file schema design
+✓ File processing logic is detailed enough for re-implementation
+✓ Business logic is clear enough for re-implementation
+
+### SME Validation
+✓ A subject matter expert can review the documentation and confirm it accurately represents the program's functionality
+✓ The narrative story enables SMEs to identify any misunderstandings or gaps
+✓ Non-technical stakeholders can understand what the program does
+
+---
+
+## Input Instructions
+
+Please provide the COBOL batch program file(s) for analysis. Include:
+- Main COBOL program (.cbl or .cob file)
+- Copybooks referenced by the program
+- Any SQL includes or database definitions (DCLGEN)
+
+**Note:** JCL files are analyzed separately and are not needed for this analysis.
+
+Once provided, I will perform the complete analysis and deliver the structured documentation according to the requirements above.
