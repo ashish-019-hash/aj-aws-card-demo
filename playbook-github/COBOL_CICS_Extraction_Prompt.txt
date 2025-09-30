@@ -172,6 +172,7 @@ For each structure, include:
 - Pseudo-conversational design (COMMAREA usage, state management)
 - Date and time handling (ASKTIME, FORMATTIME, calculations)
 
+The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
 ---
 
 ## 5. Quality Requirements
@@ -213,7 +214,6 @@ Your analysis must meet the following quality standards:
 - Show data flow from input through processing to output
 - Document dependencies and relationships between components
 
-The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
 ---
 
 ## 6. Success Criteria
