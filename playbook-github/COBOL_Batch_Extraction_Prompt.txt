@@ -24,7 +24,8 @@ Analyze the provided COBOL batch program and extract comprehensive documentation
 
 **Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details.
 
-**Note:** JCL (Job Control Language) details are extracted separately. Focus solely on the COBOL program logic and processing.
+**Note:** JCL (Job Control Language) details are extracted separately. Focus solely on the COBOL program logic and processing. You have to pick the COBOL program from the  00.phase-1-input folder of the attached repo.
+
 
 ---
 
@@ -374,6 +375,7 @@ Complete list of all files with:
 - Multiple input files (merging)
 - Multiple output files (splitting)
 
+The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
 ---
 
 ## 5. Quality Requirements
