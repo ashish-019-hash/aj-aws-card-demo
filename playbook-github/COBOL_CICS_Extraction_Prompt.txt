@@ -20,7 +20,7 @@ Analyze the provided COBOL CICS program and extract comprehensive documentation 
 
 **Input:** One COBOL CICS program file from the codebase (including any associated BMS map files, copybooks, and SQL includes if provided)
 
-**Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details.
+**Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the codebase from the 00.phase-1-input folder of the attached repo.
 
 ---
 
