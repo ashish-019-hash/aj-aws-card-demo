@@ -1,5 +1,0 @@
-CREATE UNIQUE INDEX CARDDEMO.XTRAN_TYPE
-    ON CARDDEMO.TRANSACTION_TYPE
-        (TR_TYPE   ASC)
-                    ERASE NO
-                    CLOSE NO;
