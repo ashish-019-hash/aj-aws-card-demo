@@ -114,7 +114,7 @@ Provide a table with the following columns for each screen field:
 - **Screen Flow:** Chronological user interaction sequence from initial display through all possible paths
 
 ### Section 6: Business Logic and Program Execution Flow
-**Comprehensive Narrative Story:** Create a story-like description that follows the chronological order of program execution, integrating all of the following technical details:
+**Comprehensive Narrative Story:** Create a story-like description that follows the chronological order of program execution, integrating all of the following technical details.Since we are migrating away from COBOL there is no point in getting COBOL code. Its better to explain the logic in plain English rather than getting the code snippets. We can use code snippets at places like you want to show whata are the variables used and different options in program call, XCTL, link, SQL, CICS comamnds etc:
 
 - Procedure division flow (PERFORM, GO TO, loops, nested procedures)
 - Conditional logic (IF-THEN-ELSE, EVALUATE statements, decision points)
