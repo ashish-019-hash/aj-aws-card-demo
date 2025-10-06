@@ -1,0 +1,410 @@
+# CA7 Job Flow Extraction Prompt
+
+## 1. Role to Play
+
+You are an expert mainframe job scheduler analyst with deep knowledge of:
+- CA7 (CA Workload Automation) job scheduling system
+- JCL (Job Control Language) syntax and structure
+- Mainframe batch processing and job dependencies
+- Job flow orchestration and dependency management
+- Scheduling triggers, calendars, and time-based execution
+- Legacy system migration and modernization
+- Workload automation concepts
+
+Your expertise includes understanding job dependencies, analyzing scheduling logic, identifying critical paths, documenting job flows for migration purposes, and translating complex scheduling requirements into modern workflow systems.
+
+---
+
+## 2. Your Task
+
+Analyze the provided CA7 scheduler file and extract comprehensive job flow documentation that will serve as the foundation for migrating these job flows to a modern orchestration framework (such as Apache Airflow, AWS Step Functions, Azure Data Factory, or similar). Your analysis must be thorough and accurate, as the success of the migration depends entirely on the quality of this extraction.
+
+**Input:** One or more CA7 scheduler definition files from the codebase (may include job definitions, schedule requirements, dependencies, and calendar rules)
+
+**Goal:** Extract and document all critical job flow information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the CA7 file from the 00.phase-1-input folder of the attached repo.
+
+---
+
+## 3. Analysis Approach
+
+Follow this systematic approach to analyze the CA7 scheduler file:
+
+### Step 1: Initial File Assessment
+- Identify the CA7 file format and version
+- Review high-level job definitions and scheduling requirements
+- Identify all job names, job numbers, and job types
+- Note any documentation or comments about job purposes
+
+### Step 2: Job Inventory
+- Extract all job definitions with their attributes
+- Document job numbers, job names, and descriptions
+- Identify job types (standard jobs, demand jobs, tracking jobs)
+- Capture job priorities and execution classes
+
+### Step 3: Dependency Analysis
+- Map predecessor/successor relationships between jobs
+- Identify conditional dependencies (AND/OR logic)
+- Document cross-schedule dependencies
+- Extract requirement codes and their meanings
+
+### Step 4: Scheduling Rules Extraction
+- Document scheduling calendars and time specifications
+- Extract lead time requirements
+- Identify submit time windows and deadline requirements
+- Capture automatic restart and recovery options
+
+### Step 5: Job Flow Visualization
+- Create dependency graphs showing job relationships
+- Identify parallel execution opportunities
+- Map critical paths through the schedule
+- Document job flow patterns and groupings
+
+### Step 6: Trigger and Event Analysis
+- Extract file arrival triggers
+- Document time-based triggers
+- Identify manual submission requirements
+- Capture external event dependencies
+
+### Step 7: Error Handling and Recovery
+- Document restart specifications
+- Extract maximum return code logic
+- Identify notification requirements
+- Capture recovery procedures and escalation paths
+
+### Step 8: Narrative Flow Creation
+- Synthesize all extracted information into a chronological story
+- Describe the business process being automated
+- Make it understandable for Subject Matter Experts (SMEs) to review
+- Integrate technical scheduling details into the narrative
+
+---
+
+## 4. Output Requirements
+
+Your output must include the following structured sections:
+
+### Section 1: Schedule Overview
+- **Schedule Name and Purpose:** High-level description of what this schedule accomplishes
+- **Business Process:** What business function does this schedule support?
+- **Execution Frequency:** Daily, weekly, monthly, on-demand, etc.
+- **Critical Jobs:** Which jobs are business-critical?
+- **Total Job Count:** Number of jobs in the schedule
+
+### Section 2: Job Inventory Table
+Provide a table with the following columns for each job:
+
+| Job Number | Job Name | Job Type | Description | Priority | Class | Execution Mode |
+|------------|----------|----------|-------------|----------|-------|----------------|
+
+**Column definitions:**
+- **Job Number:** CA7 job number identifier
+- **Job Name:** Job name as defined in CA7
+- **Job Type:** Standard, Demand, Tracking, etc.
+- **Description:** Purpose of the job
+- **Priority:** Job priority (1-9 or as defined)
+- **Class:** Execution class
+- **Execution Mode:** Auto, Manual, Conditional, etc.
+
+### Section 3: Job Flow Diagram
+Create a visual representation of the job flow using a directed graph format:
+
+```
+┌─────────────┐
+│  JOB001     │  ← Start of Schedule
+│  Load Data  │
+└──────┬──────┘
+       │
+       ├──────────────────┬──────────────────┐
+       │                  │                  │
+       ▼                  ▼                  ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  JOB002     │    │  JOB003     │    │  JOB004     │
+│  Process A  │    │  Process B  │    │  Process C  │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                  │
+       └──────────────────┴──────────────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │  JOB005     │
+                   │  Aggregate  │
+                   └──────┬──────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │  JOB006     │  ← End of Schedule
+                   │  Report     │
+                   └─────────────┘
+```
+
+**Legend:**
+- `│` : Sequential dependency
+- `├──┤` : Parallel execution branches
+- `→` : Conditional dependency
+- `[*]` : Critical path jobs
+
+### Section 4: Dependency Matrix
+Create a detailed dependency table:
+
+| Job Name | Predecessors | Predecessor Type | Successors | Dependency Logic |
+|----------|-------------|------------------|------------|------------------|
+
+**Dependency Types:**
+- REQUIRED: Job must complete successfully
+- OPTIONAL: Job completion not required
+- CONDITIONAL: Based on return code or condition
+- EXCLUSIVE: Cannot run concurrently
+
+### Section 5: Scheduling Requirements
+For each job or job group, document:
+
+**Timing Specifications:**
+- Submission time windows
+- Deadline requirements
+- Lead time before execution
+- Time zone considerations
+
+**Calendar Rules:**
+- Scheduling calendars used
+- Blackout dates or periods
+- Special day processing (holidays, month-end, etc.)
+- Frequency patterns (daily, weekly, monthly)
+
+**Example format:**
+```
+JOB001 - Load Data
+  - Submit Time: 01:00 AM (Eastern Time)
+  - Deadline: 03:00 AM
+  - Calendar: BUSINESS-DAYS
+  - Lead Time: 30 minutes
+  - Frequency: Daily (Monday-Friday)
+```
+
+### Section 6: Job Flow Narrative (Business Logic)
+**Comprehensive Narrative Story:** Create a story-like description that follows the chronological order of job execution. Explain the logic in plain English rather than getting the technical code snippets. You can use technical details at places where you want to show what parameters/options are used in job definitions, scheduling rules, dependency specifications, etc.
+
+The narrative should integrate:
+- Schedule initialization and trigger events
+- Job execution sequence (which jobs run when)
+- Dependency logic (why jobs wait for predecessors)
+- Data flow between jobs (input → processing → output)
+- Parallel processing sections
+- Conditional branching logic
+- Error scenarios and recovery paths
+- Schedule completion criteria
+- Business outcomes achieved
+
+**Example format:**
+```
+The schedule begins each business day at 1:00 AM when the file arrival sensor detects the completion of the upstream ETL process. Once triggered, JOB001 (Load Data) extracts data from the source system and loads it into staging tables. This job must complete successfully before any downstream processing can begin.
+
+Upon successful completion of JOB001, three parallel processing streams execute simultaneously:
+- JOB002 (Process A) handles customer transactions...
+- JOB003 (Process B) processes account updates...
+- JOB004 (Process C) validates regulatory compliance...
+
+All three jobs must complete successfully (REQUIRED dependency) before JOB005 (Aggregate) can execute. If any of these jobs fail, the entire schedule pauses and alerts are sent to the operations team...
+
+The schedule concludes with JOB006 (Report) generating summary reports and notifications. The entire flow typically completes by 4:00 AM, well within the 6:00 AM SLA deadline.
+```
+
+### Section 7: Job Details and Specifications
+For each job, document:
+
+**Job Attributes:**
+- Job number and name
+- JCL procedure or program called
+- Input datasets or files
+- Output datasets or files
+- Expected runtime
+- Resource requirements (CPU, memory, storage)
+
+**Execution Parameters:**
+- Maximum return codes (RC values)
+- Automatic restart options (Y/N)
+- Number of restart attempts
+- Hold/Release conditions
+
+**Example format:**
+```
+JOB001 - Load Data (Job #0001)
+  JCL: PROD.JCL.LIB(LOADDATA)
+  Program: LOADDTPG
+  Input: EXTDATA.SOURCE.FILE
+  Output: STAGING.DATA.TABLE
+  Expected Runtime: 15 minutes
+  Max RC: 4 (Warning), 8 (Failure)
+  Auto Restart: Yes (Max 2 attempts)
+  Priority: 5
+```
+
+### Section 8: Triggers and Events
+Document all triggering mechanisms:
+
+**File Triggers:**
+- File arrival dependencies
+- Dataset existence checks
+- File size or timestamp requirements
+
+**Time Triggers:**
+- Scheduled start times
+- Submission windows
+- Deadline constraints
+
+**Event Triggers:**
+- External system events
+- Database triggers
+- Manual submission requirements
+
+**Cross-Schedule Dependencies:**
+- Jobs from other schedules that must complete
+- Shared resources or datasets
+- Inter-schedule coordination
+
+### Section 9: Error Handling and Recovery
+Document error handling for each job and the overall schedule:
+
+**Return Code Handling:**
+- Acceptable return codes by job
+- Warning thresholds
+- Failure conditions
+
+**Restart Logic:**
+- Automatic restart specifications
+- Checkpoint/restart capabilities
+- Manual intervention requirements
+
+**Notification Rules:**
+- Alert recipients by job or scenario
+- Escalation procedures
+- On-call requirements
+
+**Recovery Procedures:**
+- Standard recovery steps
+- Data rollback procedures
+- Business continuity considerations
+
+### Section 10: Migration Considerations
+**Critical Migration Details:**
+
+**Dependencies on External Systems:**
+- File systems and datasets
+- Database connections
+- Network resources
+- External applications
+
+**Timing Constraints:**
+- Hard deadlines that must be met
+- SLA requirements
+- Batch window limitations
+
+**Business Rules:**
+- Data retention requirements
+- Audit and compliance needs
+- Security and access controls
+
+**Technical Constraints:**
+- Resource limitations
+- Concurrent execution limits
+- System availability windows
+
+**Modernization Opportunities:**
+- Jobs that can be parallelized
+- Dependencies that can be eliminated
+- Processes that can be optimized
+
+The output file should be {schedule_name}_job_flow.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+
+---
+
+## 5. Quality Requirements
+
+Your analysis must meet the following quality standards:
+
+### Accuracy
+- **100% accuracy** in extracting job names, numbers, and dependencies
+- Scheduling rules must match exactly as defined in CA7
+- Dependency relationships must be precisely documented
+- All timing specifications must be correctly identified
+
+### Completeness
+- **No omissions:** Every job in the schedule must be documented
+- All predecessor/successor relationships must be captured
+- Every scheduling rule and calendar must be documented
+- All error handling and recovery procedures must be listed
+
+### Clarity
+- Technical details must be presented in a clear, organized manner
+- The narrative story must be understandable by non-technical SMEs
+- Use consistent terminology throughout the documentation
+- Provide sufficient context for each documented item
+
+### Focus on Migration Relevance
+- **Include:** Job dependencies, scheduling rules, error handling, business logic
+- **Exclude:** CA7-specific internal codes that don't affect job flow logic
+- Prioritize information critical for understanding workflow orchestration
+- Highlight modernization opportunities
+
+### Verifiability
+- Reference actual CA7 definitions (show job numbers, requirement codes)
+- Include specific job names, dataset names, and time specifications
+- Provide line numbers or section references where possible
+- Enable SMEs to verify accuracy against source CA7 files
+
+### Traceability
+- Clearly link jobs to their predecessors and successors
+- Map triggers to the jobs they initiate
+- Show data flow from one job to the next
+- Document dependencies and relationships between components
+
+---
+
+## 6. Success Criteria
+
+Your analysis will be considered successful when:
+
+### Documentation Completeness
+✓ All 10 required sections are fully documented
+✓ Every job has complete details (number, name, type, description, dependencies)
+✓ All dependency relationships are documented with logic type
+✓ The narrative story covers the complete schedule execution from trigger to completion
+✓ All scheduling rules and timing constraints are captured
+
+### Technical Accuracy
+✓ Job flow diagram accurately represents execution sequence and parallelism
+✓ All predecessor/successor relationships are correctly documented
+✓ Scheduling calendars and time windows are precise
+✓ Error handling and recovery procedures are completely captured
+✓ Return code logic is accurately transcribed
+
+### Narrative Quality
+✓ The chronological story integrates all technical details seamlessly
+✓ SMEs can understand the schedule's functionality without reading CA7 code
+✓ All business logic, dependencies, and decision points are clearly explained
+✓ The narrative shows the business value and outcomes of the schedule
+
+### Migration Readiness
+✓ The documentation provides sufficient information to rebuild the workflow in a modern orchestration tool
+✓ All external dependencies are identified
+✓ Timing constraints and SLAs are clear enough for new system design
+✓ Job flow is detailed enough for workflow implementation
+✓ Error handling is clear enough for exception management design
+
+### SME Validation
+✓ A subject matter expert can review the documentation and confirm it accurately represents the schedule's functionality
+✓ The narrative story enables SMEs to identify any misunderstandings or gaps
+✓ Non-technical stakeholders can understand what the schedule accomplishes
+✓ Operations teams can use this as a reference for troubleshooting
+
+---
+
+## Input Instructions
+
+Please provide the CA7 scheduler file(s) for analysis. Include:
+- Main CA7 definition files
+- Schedule requirement specifications
+- Calendar definitions (if in separate files)
+- Any job documentation or comments
+- Related JCL procedures (if available)
+
+Once provided, I will perform the complete analysis and deliver the structured documentation according to the requirements above.
