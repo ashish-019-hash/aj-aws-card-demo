@@ -763,196 +763,58 @@ YES│      │NO
 
 ### 6.1 Program Initialization
 
-When the COACTUPC program begins execution (paragraph **0000-MAIN**, line 859), it first establishes an abend handling routine:
-
-```cobol
-EXEC CICS HANDLE ABEND
-          LABEL(ABEND-ROUTINE)
-END-EXEC
-```
-
-This ensures that any unexpected errors will be trapped and handled gracefully. The program then initializes its working storage areas:
-
-```cobol
-INITIALIZE CC-WORK-AREA
-           WS-MISC-STORAGE
-           WS-COMMAREA
-```
-
-The program stores its transaction context (`MOVE LIT-THISTRANID TO WS-TRANID` where `LIT-THISTRANID` is 'CAUP') and clears any error message flags (`SET WS-RETURN-MSG-OFF TO TRUE`).
+When the COACTUPC program begins execution (paragraph **0000-MAIN**, line 859), it first establishes an abend handling routine using `EXEC CICS HANDLE ABEND LABEL(ABEND-ROUTINE)` to trap unexpected errors. The program then initializes its working storage areas (`CC-WORK-AREA`, `WS-MISC-STORAGE`, `WS-COMMAREA`), stores its transaction context (transaction ID 'CAUP' in `WS-TRANID`, program name in `WS-PROGRAM`), and clears any error message flags.
 
 ### 6.2 COMMAREA Processing and State Management
 
-The program employs a pseudo-conversational design pattern. On each invocation, it examines the COMMAREA to determine its current state (lines 880-893):
+The program employs a pseudo-conversational design pattern. On each invocation, it examines the COMMAREA to determine its current state (lines 880-893).
 
-```cobol
-IF EIBCALEN IS EQUAL TO 0
-OR (CDEMO-FROM-PROGRAM = LIT-MENUPGM
-AND NOT CDEMO-PGM-REENTER)
-   INITIALIZE CARDDEMO-COMMAREA
-              WS-THIS-PROGCOMMAREA
-   SET CDEMO-PGM-ENTER TO TRUE
-   SET ACUP-DETAILS-NOT-FETCHED TO TRUE
-ELSE
-   MOVE DFHCOMMAREA (1:LENGTH OF CARDDEMO-COMMAREA)  TO
-                     CARDDEMO-COMMAREA
-   MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:
-                    LENGTH OF WS-THIS-PROGCOMMAREA ) TO
-                     WS-THIS-PROGCOMMAREA
-END-IF
-```
+**Case 1: Initial Entry** - When `EIBCALEN = 0` or fresh entry from menu program (`CDEMO-FROM-PROGRAM = LIT-MENUPGM` with `NOT CDEMO-PGM-REENTER`), the program initializes both `CARDDEMO-COMMAREA` and `WS-THIS-PROGCOMMAREA`, sets state to `CDEMO-PGM-ENTER` and `ACUP-DETAILS-NOT-FETCHED`, indicating no data has been fetched yet.
 
-**Case 1: Initial Entry** (`EIBCALEN = 0` or fresh entry from menu)
-- All work areas are initialized
-- State set to `CDEMO-PGM-ENTER` and `ACUP-DETAILS-NOT-FETCHED`
-- No data has been fetched yet
-
-**Case 2: Re-entry** (user pressed ENTER, F5, F12, etc.)
-- COMMAREA is restored from `DFHCOMMAREA`
-- Previous state is preserved in `WS-THIS-PROGCOMMAREA`
-- Program knows what data was fetched and what state it's in
+**Case 2: Re-entry** - When the user pressed ENTER, F5, F12, or any other key, the program restores the previous state by moving the first portion of `DFHCOMMAREA` to `CARDDEMO-COMMAREA` and the second portion to `WS-THIS-PROGCOMMAREA`. This preserves all previously fetched data, validation flags, and state indicators across pseudo-conversational interactions.
 
 ### 6.3 PF Key Mapping and Validation
 
-After restoring state, the program performs PF key validation through the `YYYY-STORE-PFKEY` procedure (line 898), which is a common routine from copybook `CSSTRPFY`. This procedure maps the attention identifier (AID) to standardized PF key flags.
+After restoring state, the program performs PF key validation through the `YYYY-STORE-PFKEY` procedure (line 898), a common routine from copybook `CSSTRPFY` that maps the attention identifier (AID) to standardized PF key flags.
 
-The program then validates which PF keys are acceptable in the current state (lines 905-916):
-
-```cobol
-SET PFK-INVALID TO TRUE
-IF CCARD-AID-ENTER OR
-   CCARD-AID-PFK03 OR
-   (CCARD-AID-PFK05 AND ACUP-CHANGES-OK-NOT-CONFIRMED)
-                   OR
-   (CCARD-AID-PFK12 AND NOT ACUP-DETAILS-NOT-FETCHED)
-   SET PFK-VALID TO TRUE
-END-IF
-
-IF PFK-INVALID
-   SET CCARD-AID-ENTER TO TRUE
-END-IF
-```
-
-**Valid Keys by State:**
-- **ENTER:** Always valid
-- **F3:** Always valid
-- **F5:** Valid only when changes have been validated (`ACUP-CHANGES-OK-NOT-CONFIRMED`)
-- **F12:** Valid only when account data has been fetched
-
-Any invalid key press is treated as ENTER, preventing user confusion.
+The program then validates which PF keys are acceptable in the current state (lines 905-916). It initializes the key as invalid, then checks if the pressed key is one of the allowed keys: ENTER (always valid), F3 (always valid), F5 (valid only when `ACUP-CHANGES-OK-NOT-CONFIRMED`), or F12 (valid only when `NOT ACUP-DETAILS-NOT-FETCHED`). If the key is valid, the valid flag is set; otherwise any invalid key press is treated as ENTER to prevent user confusion.
 
 ### 6.4 Main Processing Logic
 
-The program uses an `EVALUATE TRUE` structure (lines 921-1004) to route processing based on the current state and PF key pressed. This section details each processing path with the actual COBOL code from the program.
+The program uses an `EVALUATE TRUE` structure (lines 921-1004) to route processing based on the current state and PF key pressed.
 
 #### 6.4.1 F3 Exit Processing
 
-When the user presses F3 to exit (lines 927-959):
+When the user presses F3 to exit (lines 927-959), the program performs a clean exit. It first checks if a calling program exists by examining `CDEMO-FROM-TRANID` and `CDEMO-FROM-PROGRAM`. If empty or spaces, it defaults to the main menu program (`LIT-MENUPGM` = 'COMEN01C') and menu transaction (`LIT-MENUTRANID` = 'CMEN'). Otherwise, it returns to the calling program using the stored program and transaction IDs.
+
+The program then updates the navigation context by moving the current program and transaction IDs to the from-fields, setting user type and entry flags, and recording the last mapset and map. It commits any pending changes via `EXEC CICS SYNCPOINT`, then transfers control using:
 
 ```cobol
-WHEN CCARD-AID-PFK03
-     SET CCARD-AID-PFK03     TO TRUE
-
-     IF CDEMO-FROM-TRANID    EQUAL LOW-VALUES
-     OR CDEMO-FROM-TRANID    EQUAL SPACES
-        MOVE LIT-MENUTRANID  TO CDEMO-TO-TRANID
-     ELSE
-        MOVE CDEMO-FROM-TRANID  TO CDEMO-TO-TRANID
-     END-IF
-
-     IF CDEMO-FROM-PROGRAM   EQUAL LOW-VALUES
-     OR CDEMO-FROM-PROGRAM   EQUAL SPACES
-        MOVE LIT-MENUPGM     TO CDEMO-TO-PROGRAM
-     ELSE
-        MOVE CDEMO-FROM-PROGRAM TO CDEMO-TO-PROGRAM
-     END-IF
-
-     MOVE LIT-THISTRANID     TO CDEMO-FROM-TRANID
-     MOVE LIT-THISPGM        TO CDEMO-FROM-PROGRAM
-
-     SET  CDEMO-USRTYP-USER  TO TRUE
-     SET  CDEMO-PGM-ENTER    TO TRUE
-     MOVE LIT-THISMAPSET     TO CDEMO-LAST-MAPSET
-     MOVE LIT-THISMAP        TO CDEMO-LAST-MAP
-
-     EXEC CICS
-          SYNCPOINT
-     END-EXEC
-
-     EXEC CICS XCTL
-          PROGRAM (CDEMO-TO-PROGRAM)
-          COMMAREA(CARDDEMO-COMMAREA)
-     END-EXEC
+EXEC CICS XCTL
+     PROGRAM (CDEMO-TO-PROGRAM)
+     COMMAREA(CARDDEMO-COMMAREA)
+END-EXEC
 ```
 
-The program determines the target program (calling program or main menu), updates COMMAREA navigation context, commits changes via `SYNCPOINT`, and transfers control via `XCTL`.
+This preserves navigation context in `CARDDEMO-COMMAREA`, allowing the target program to know where the user came from.
 
 #### 6.4.2 Initial Display and Reset Scenarios
 
-When displaying the initial entry screen or resetting after completion (lines 964-989):
+When displaying the initial entry screen or resetting after completion (lines 964-989), the program branches based on state. For initial entry (`ACUP-DETAILS-NOT-FETCHED` with `CDEMO-PGM-ENTER`) or fresh entry from menu (`CDEMO-FROM-PROGRAM = LIT-MENUPGM` with `NOT CDEMO-PGM-REENTER`), it initializes the program-specific area, sends a blank map via `3000-SEND-MAP`, sets the re-entry flag, and returns to CICS.
 
-```cobol
-WHEN ACUP-DETAILS-NOT-FETCHED
- AND CDEMO-PGM-ENTER
-WHEN CDEMO-FROM-PROGRAM   EQUAL LIT-MENUPGM
- AND NOT CDEMO-PGM-REENTER
-     INITIALIZE WS-THIS-PROGCOMMAREA
-     PERFORM 3000-SEND-MAP THRU
-             3000-SEND-MAP-EXIT
-     SET CDEMO-PGM-REENTER        TO TRUE
-     SET ACUP-DETAILS-NOT-FETCHED TO TRUE
-     GO TO COMMON-RETURN
-
-WHEN ACUP-CHANGES-OKAYED-AND-DONE
-WHEN ACUP-CHANGES-FAILED
-     INITIALIZE WS-THIS-PROGCOMMAREA
-                WS-MISC-STORAGE
-                CDEMO-ACCT-ID
-     SET CDEMO-PGM-ENTER            TO TRUE
-     PERFORM 3000-SEND-MAP THRU
-             3000-SEND-MAP-EXIT
-     SET CDEMO-PGM-REENTER          TO TRUE
-     SET ACUP-DETAILS-NOT-FETCHED   TO TRUE
-     GO TO COMMON-RETURN
-```
-
-These scenarios display a blank screen prompting for an account number.
+For terminal states (`ACUP-CHANGES-OKAYED-AND-DONE` or `ACUP-CHANGES-FAILED`), the program initializes all working storage areas and the account ID, sets entry state, sends a blank map, sets re-entry flag, and returns. These scenarios display a blank screen prompting for a new account number.
 
 #### 6.4.3 Normal Processing Flow
 
-For all other cases (lines 996-1003):
-
-```cobol
-WHEN OTHER
-     PERFORM 1000-PROCESS-INPUTS
-        THRU 1000-PROCESS-INPUTS-EXIT
-     PERFORM 2000-DECIDE-ACTION
-        THRU 2000-DECIDE-ACTION-EXIT
-     PERFORM 3000-SEND-MAP
-        THRU 3000-SEND-MAP-EXIT
-     GO TO COMMON-RETURN
-```
-
-This is the main processing path involving input reception, validation, decision logic, and screen display.
+For all other cases (lines 996-1003), the program follows the standard processing path by performing `1000-PROCESS-INPUTS` to receive and validate input, then `2000-DECIDE-ACTION` to determine what action to take, then `3000-SEND-MAP` to display the screen, and finally proceeding to `COMMON-RETURN`. This is the main processing path involving input reception, validation, decision logic, and screen display.
 
 ### 6.5 Input Processing
 
-The `1000-PROCESS-INPUTS` section (lines 1025-1037) coordinates receiving and validating input:
-
-```cobol
-PERFORM 1100-RECEIVE-MAP
-   THRU 1100-RECEIVE-MAP-EXIT
-PERFORM 1200-EDIT-MAP-INPUTS
-   THRU 1200-EDIT-MAP-INPUTS-EXIT
-MOVE WS-RETURN-MSG  TO CCARD-ERROR-MSG
-MOVE LIT-THISPGM    TO CCARD-NEXT-PROG
-MOVE LIT-THISMAPSET TO CCARD-NEXT-MAPSET
-MOVE LIT-THISMAP    TO CCARD-NEXT-MAP
-```
+The `1000-PROCESS-INPUTS` section (lines 1025-1037) coordinates receiving and validating input. It performs `1100-RECEIVE-MAP` to retrieve screen data, then `1200-EDIT-MAP-INPUTS` to validate all inputs. After validation, it prepares navigation context by moving the return message to `CCARD-ERROR-MSG` and setting the next program, mapset, and map identifiers all to reference this program, ensuring the user stays on this screen.
 
 #### 6.5.1 Receive Map
 
-The `1100-RECEIVE-MAP` paragraph (lines 1039-1426) receives screen data:
+The `1100-RECEIVE-MAP` paragraph (lines 1039-1426) receives screen data using:
 
 ```cobol
 EXEC CICS RECEIVE MAP(LIT-THISMAP)
@@ -963,262 +825,51 @@ EXEC CICS RECEIVE MAP(LIT-THISMAP)
 END-EXEC
 ```
 
-Then moves each field from the input map to working storage. For example, account number (lines 1051-1062):
+The routine then systematically moves each field from the input map (`CACTUPAI`) to working storage. For each field, it checks if the input is an asterisk or spaces, indicating no change. If so, it moves LOW-VALUES to the corresponding working storage field. Otherwise, it moves the actual input value.
 
-```cobol
-IF  ACCTSIDI OF CACTUPAI = '*'
-OR  ACCTSIDI OF CACTUPAI = SPACES
-    MOVE LOW-VALUES           TO CC-ACCT-ID
-                                 ACUP-NEW-ACCT-ID-X
-ELSE
-    MOVE ACCTSIDI OF CACTUPAI TO CC-ACCT-ID
-                                 ACUP-NEW-ACCT-ID-X
-END-IF
+For the account number field (lines 1051-1062), the program checks for asterisk or spaces and moves the value to both `CC-ACCT-ID` and `ACUP-NEW-ACCT-ID-X`. If details haven't been fetched yet (`ACUP-DETAILS-NOT-FETCHED`), it exits immediately since only the account number is needed for initial search.
 
-IF ACUP-DETAILS-NOT-FETCHED
-   GO TO 1100-RECEIVE-MAP-EXIT
-END-IF
-```
+For numeric fields like credit limit (lines 1073-1084), the program performs additional validation. It moves the input to the display format field (`ACUP-NEW-CREDIT-LIMIT-X`), then uses `FUNCTION TEST-NUMVAL-C` to verify the input is numeric. If valid, it converts the value using `FUNCTION NUMVAL-C` and stores it in the numeric format field (`ACUP-NEW-CREDIT-LIMIT-N`).
 
-If no account has been fetched, only the account number is processed. For numeric fields like credit limit (lines 1073-1084):
+For date fields (lines 1144-1163), the program splits the input into separate components: year (4 digits), month (2 digits), and day (2 digits), storing each component in its own working storage field (`ACUP-NEW-OPEN-YEAR`, `ACUP-NEW-OPEN-MON`, `ACUP-NEW-OPEN-DAY`) for independent validation later.
 
-```cobol
-IF  ACRDLIMI OF CACTUPAI = '*'
-OR  ACRDLIMI OF CACTUPAI = SPACES
-    MOVE LOW-VALUES           TO ACUP-NEW-CREDIT-LIMIT-X
-ELSE
-    MOVE ACRDLIMI OF CACTUPAI TO ACUP-NEW-CREDIT-LIMIT-X
-    IF FUNCTION TEST-NUMVAL-C(ACUP-NEW-CREDIT-LIMIT-X) = 0
-       COMPUTE ACUP-NEW-CREDIT-LIMIT-N =
-          FUNCTION NUMVAL-C(ACRDLIMI OF CACTUPAI)
-    ELSE
-       CONTINUE
-    END-IF
-END-IF
-```
-
-Date fields are split into components (lines 1144-1163):
-
-```cobol
-IF  OPNYEARI OF CACTUPAI = '*'
-OR  OPNYEARI OF CACTUPAI = SPACES
-    MOVE LOW-VALUES           TO ACUP-NEW-OPEN-YEAR
-ELSE
-    MOVE OPNYEARI OF CACTUPAI TO ACUP-NEW-OPEN-YEAR
-END-IF
-
-IF  OPNMONI OF CACTUPAI = '*'
-OR  OPNMONI OF CACTUPAI = SPACES
-    MOVE LOW-VALUES           TO ACUP-NEW-OPEN-MON
-ELSE
-    MOVE OPNMONI OF CACTUPAI TO  ACUP-NEW-OPEN-MON
-END-IF
-
-IF  OPNDAYI OF CACTUPAI = '*'
-OR  OPNDAYI OF CACTUPAI = SPACES
-    MOVE LOW-VALUES           TO ACUP-NEW-OPEN-DAY
-ELSE
-    MOVE OPNDAYI OF CACTUPAI TO  ACUP-NEW-OPEN-DAY
-END-IF
-```
+The process repeats for all screen fields including account status, expiration date, reissue date, current balance, cash credit limit, current cycle credit/debit, group ID, customer name components, three address lines, state code, country code, zip code, two phone numbers, SSN components, government ID, date of birth components, FICO score, and EFT account ID. The routine systematically captures all user inputs while handling blank/unchanged fields appropriately.
 
 #### 6.5.2 Edit Map Inputs
 
-The `1200-EDIT-MAP-INPUTS` paragraph (lines 1429-1678) performs comprehensive validation. It first initializes validation status:
+The `1200-EDIT-MAP-INPUTS` paragraph (lines 1429-1678) performs comprehensive validation. It first initializes validation status by setting `INPUT-OK` to TRUE.
 
-```cobol
-SET INPUT-OK TO TRUE
-```
+**If Account Not Yet Fetched** (lines 1433-1446) - When `ACUP-DETAILS-NOT-FETCHED` is true, the program only validates the account number by performing `1210-EDIT-ACCOUNT`, which checks that the account number is 11 digits, numeric, and non-zero (lines 1783-1822). If the account number is blank (`FLG-ACCTFILTER-BLANK`), it sets the `NO-SEARCH-CRITERIA-RECEIVED` flag. The routine then initializes `ACUP-OLD-ACCT-DATA` to LOW-VALUES and exits early since no other fields are relevant yet.
 
-**If Account Not Yet Fetched** (lines 1433-1446), only the account number is validated:
+**If Account Already Fetched** (lines 1451-1460) - The program sets various found flags (`FOUND-ACCOUNT-DATA`, `FOUND-ACCT-IN-MASTER`, `FLG-ACCTFILTER-ISVALID`, `FOUND-CUST-IN-MASTER`, `FLG-CUSTFILTER-ISVALID`), then performs `1205-COMPARE-OLD-NEW` to compare every field between old and new values.
 
-```cobol
-IF  ACUP-DETAILS-NOT-FETCHED
-    PERFORM 1210-EDIT-ACCOUNT
-       THRU 1210-EDIT-ACCOUNT-EXIT
+The `1205-COMPARE-OLD-NEW` paragraph (lines 1681-1778) performs a field-by-field comparison between `ACUP-OLD-*` and `ACUP-NEW-*` values. For each field, it checks if the values differ. If any field has changed, it sets the `CHANGES-FOUND` flag and updates a corresponding field-level change flag. This comparison covers all account fields (status, balance, credit limits, dates, cycle amounts, group ID) and all customer fields (name components, address lines, state, country, zip, phone numbers, SSN, government ID, date of birth, FICO score, EFT account).
 
-    MOVE LOW-VALUES           TO ACUP-OLD-ACCT-DATA
+If no changes are found, or if changes were already validated or completed (lines 1462-1465), the program clears non-key flags and exits validation early.
 
-    IF  FLG-ACCTFILTER-BLANK
-        SET NO-SEARCH-CRITERIA-RECEIVED TO TRUE
-    END-IF
+If changes are detected, the program validates each modified field by calling specialized validation routines. For example, it moves the variable name and value to working storage fields, then performs the appropriate validation routine like `1220-EDIT-YESNO` for account status, `EDIT-DATE-CCYYMMDD` for dates, `1250-EDIT-SIGNED-9V2` for currency fields, `1225-EDIT-ALPHA-REQD` for customer names, `1230-EDIT-ALPHA-OR-SPACE` for address fields, `1260-EDIT-US-PHONE-NUM` for phone numbers, `1265-EDIT-US-SSN` for SSN, `1270-EDIT-US-STATE-CD` for state code, `1280-EDIT-US-STATE-ZIP-CD` for zip/state combo, and `1245-EDIT-NUM-REQD` for FICO score.
 
-    GO TO 1200-EDIT-MAP-INPUTS-EXIT
-ELSE
-    CONTINUE
-END-IF
-```
+Each validation routine stores its result in corresponding working storage flags. If any validation fails, the `INPUT-ERROR` flag is set.
 
-The `1210-EDIT-ACCOUNT` paragraph (lines 1783-1822) validates that the account number is 11 digits, numeric, and non-zero.
-
-**If Account Already Fetched**, the program compares old and new values (lines 1451-1460):
-
-```cobol
-SET FOUND-ACCOUNT-DATA        TO TRUE
-SET FOUND-ACCT-IN-MASTER      TO TRUE
-SET FLG-ACCTFILTER-ISVALID    TO TRUE
-
-SET FOUND-CUST-IN-MASTER      TO TRUE
-SET FLG-CUSTFILTER-ISVALID    TO TRUE
-
-PERFORM 1205-COMPARE-OLD-NEW
-   THRU 1205-COMPARE-OLD-NEW-EXIT
-```
-
-The `1205-COMPARE-OLD-NEW` paragraph (lines 1681-1778) compares every field between old and new values. If no changes are found or changes were already validated, processing skips field validation (lines 1462-1465):
-
-```cobol
-IF  NO-CHANGES-FOUND
-OR  ACUP-CHANGES-OK-NOT-CONFIRMED
-OR  ACUP-CHANGES-OKAYED-AND-DONE
-    MOVE LOW-VALUES           TO WS-NON-KEY-FLAGS
-    GO TO 1200-EDIT-MAP-INPUTS-EXIT
-END-IF
-```
-
-If changes are detected, each field is validated. For example, account status (lines 1472-1476):
-
-```cobol
-MOVE 'Account Status'          TO WS-EDIT-VARIABLE-NAME
-MOVE ACUP-NEW-ACTIVE-STATUS    TO WS-EDIT-YES-NO
-PERFORM 1220-EDIT-YESNO
-   THRU 1220-EDIT-YESNO-EXIT
-MOVE WS-EDIT-YES-NO            TO WS-EDIT-ACCT-STATUS
-```
-
-Date validation for open date (lines 1478-1482):
-
-```cobol
-MOVE 'Open Date'              TO WS-EDIT-VARIABLE-NAME
-MOVE ACUP-NEW-OPEN-DATE       TO WS-EDIT-DATE-CCYYMMDD
-PERFORM EDIT-DATE-CCYYMMDD
-   THRU EDIT-DATE-CCYYMMDD-EXIT
-MOVE WS-EDIT-DATE-FLGS        TO WS-EDIT-OPEN-DATE-FLGS
-```
-
-SSN validation (lines 1529-1531):
-
-```cobol
-MOVE 'SSN'                    TO WS-EDIT-VARIABLE-NAME
-PERFORM 1265-EDIT-US-SSN
-   THRU 1265-EDIT-US-SSN-EXIT
-```
-
-Final validation check (lines 1671-1675):
-
-```cobol
-IF INPUT-ERROR
-   CONTINUE
-ELSE
-   SET ACUP-CHANGES-OK-NOT-CONFIRMED TO TRUE
-END-IF
-```
-
-If all validations pass, the state is set to enable the F5 save button.
+At the end of validation (lines 1671-1675), if all validations passed (`INPUT-OK`), the program sets `ACUP-CHANGES-OK-NOT-CONFIRMED` to enable the F5 save button and prompt the user to confirm the save operation.
 
 ### 6.6 Decision Logic
 
-The `2000-DECIDE-ACTION` paragraph (lines 2549-2645) determines actions based on state:
+The `2000-DECIDE-ACTION` paragraph (lines 2549-2645) determines actions based on the current state.
 
-```cobol
-EVALUATE TRUE
-```
+**First Search - Fetch Account Data** (lines 2552-2570) - When `ACUP-DETAILS-NOT-FETCHED` is true and the account filter is valid (`FLG-ACCTFILTER-ISVALID`), the program performs `9000-READ-ACCT` to read data from the three files (card cross-reference, account master, customer master). If the account is found (`FOUND-ACCOUNT-DATA`), it sets the state to `ACUP-SHOW-DETAILS` to display the fetched data on screen.
 
-**First Search - Fetch Account Data** (lines 2552-2570):
+**Changes Made and Valid** (lines 2579-2583) - When `ACUP-CHANGES-MADE` is true and all inputs are valid (`INPUT-OK`), the program sets state to `ACUP-CHANGES-OK-NOT-CONFIRMED` and sets the `PROMPT-FOR-CONFIRM-SAVE` flag to display a message asking the user to press F5 to save or F12 to cancel.
 
-```cobol
-WHEN ACUP-DETAILS-NOT-FETCHED
- AND FLG-ACCTFILTER-ISVALID
-     PERFORM 9000-READ-ACCT
-        THRU 9000-READ-ACCT-EXIT
-     IF FOUND-ACCOUNT-DATA
-        SET ACUP-SHOW-DETAILS       TO TRUE
-     ELSE
-        CONTINUE
-     END-IF
-```
+**User Confirms Save (F5)** (lines 2602-2615) - When in the confirm state (`ACUP-CHANGES-OK-NOT-CONFIRMED`) and F5 is pressed (`CCARD-AID-PFK05`), the program performs `9600-WRITE-PROCESSING` to update the database. Based on the results, it evaluates four possible outcomes: if could not lock account, sets state to `ACUP-CHANGES-OKAYED-LOCK-ERROR`; if locked but update failed, sets state to `ACUP-CHANGES-OKAYED-BUT-FAILED`; if data was changed before update, another user modified the data, so sets state back to `ACUP-SHOW-DETAILS` to display current values; otherwise update succeeded, sets state to `ACUP-CHANGES-OKAYED-AND-DONE`.
 
-**Changes Made and Valid** (lines 2579-2583):
-
-```cobol
-WHEN ACUP-CHANGES-MADE
- AND INPUT-OK
-     SET ACUP-CHANGES-OK-NOT-CONFIRMED TO TRUE
-     SET PROMPT-FOR-CONFIRM-SAVE       TO TRUE
-```
-
-**User Confirms Save (F5)** (lines 2602-2615):
-
-```cobol
-WHEN ACUP-CHANGES-OK-NOT-CONFIRMED
- AND CCARD-AID-PFK05
-   PERFORM 9600-WRITE-PROCESSING
-      THRU 9600-WRITE-PROCESSING-EXIT
-   EVALUATE TRUE
-      WHEN COULD-NOT-LOCK-ACCT-FOR-UPDATE
-           SET ACUP-CHANGES-OKAYED-LOCK-ERROR TO TRUE
-      WHEN LOCKED-BUT-UPDATE-FAILED
-         SET ACUP-CHANGES-OKAYED-BUT-FAILED TO TRUE
-      WHEN DATA-WAS-CHANGED-BEFORE-UPDATE
-          SET ACUP-SHOW-DETAILS            TO TRUE
-      WHEN OTHER
-         SET ACUP-CHANGES-OKAYED-AND-DONE   TO TRUE
-   END-EVALUATE
-```
-
-**Unexpected State** (lines 2633-2640):
-
-```cobol
-WHEN OTHER
-     MOVE LIT-THISPGM    TO ABEND-CULPRIT
-     MOVE '0001'         TO ABEND-CODE
-     MOVE SPACES         TO ABEND-REASON
-     MOVE 'UNEXPECTED DATA SCENARIO'
-                         TO ABEND-MSG
-     PERFORM ABEND-ROUTINE
-        THRU ABEND-ROUTINE-EXIT
-```
+**Unexpected State** (lines 2633-2640) - Any unhandled scenario triggers an abend by setting `ABEND-CULPRIT` to the program name, `ABEND-CODE` to '0001', and `ABEND-MSG` to 'UNEXPECTED DATA SCENARIO', then performing the `ABEND-ROUTINE`.
 
 ### 6.7 Account Data Fetch Process
 
-The `9000-READ-ACCT` paragraph (lines 3608-3648) orchestrates reading from three files:
+The `9000-READ-ACCT` paragraph (lines 3608-3648) orchestrates reading from three files. It begins by initializing the old details area (`ACUP-OLD-DETAILS`), setting the no-info-message flag, and moving the account ID to working storage fields (`ACUP-OLD-ACCT-ID`, `WS-CARD-RID-ACCT-ID`). It then performs three sequential read operations.
 
-```cobol
-INITIALIZE ACUP-OLD-DETAILS
-
-SET  WS-NO-INFO-MESSAGE      TO TRUE
-
-MOVE CC-ACCT-ID              TO ACUP-OLD-ACCT-ID
-                                WS-CARD-RID-ACCT-ID
-
-PERFORM 9200-GETCARDXREF-BYACCT
-   THRU 9200-GETCARDXREF-BYACCT-EXIT
-
-IF FLG-ACCTFILTER-NOT-OK
-   GO TO 9000-READ-ACCT-EXIT
-END-IF
-
-PERFORM 9300-GETACCTDATA-BYACCT
-   THRU 9300-GETACCTDATA-BYACCT-EXIT
-
-IF DID-NOT-FIND-ACCT-IN-ACCTDAT
-   GO TO 9000-READ-ACCT-EXIT
-END-IF
-
-MOVE CDEMO-CUST-ID TO WS-CARD-RID-CUST-ID
-
-PERFORM 9400-GETCUSTDATA-BYCUST
-   THRU 9400-GETCUSTDATA-BYCUST-EXIT
-
-IF DID-NOT-FIND-CUST-IN-CUSTDAT
-   GO TO 9000-READ-ACCT-EXIT
-END-IF
-
-PERFORM 9500-STORE-FETCHED-DATA
-   THRU 9500-STORE-FETCHED-DATA-EXIT
-```
-
-**Step 1: Read Card Cross-Reference** (lines 3654-3662):
+**Step 1: Read Card Cross-Reference** (lines 3654-3662) - The program performs `9200-GETCARDXREF-BYACCT` which executes:
 
 ```cobol
 EXEC CICS READ
@@ -1232,9 +883,9 @@ EXEC CICS READ
 END-EXEC
 ```
 
-This accesses the alternate index CXACAIX to get Customer ID from Account ID.
+This accesses the alternate index CXACAIX to get Customer ID from Account ID. The response code is checked; if not found, the program sets error flags and exits. If successful, it proceeds to read the account master.
 
-**Step 2: Read Account Master** (lines 3703-3711):
+**Step 2: Read Account Master** (lines 3703-3711) - The program performs `9300-GETACCTDATA-BYACCT` which executes:
 
 ```cobol
 EXEC CICS READ
@@ -1248,7 +899,9 @@ EXEC CICS READ
 END-EXEC
 ```
 
-**Step 3: Read Customer Master** (lines 3753-3761):
+This reads the account master file (ACCTDAT) to retrieve account financial data including balances, credit limits, and dates. If not found, it sets error flags and exits. If successful, it continues to read the customer master.
+
+**Step 3: Read Customer Master** (lines 3753-3761) - The program first moves the customer ID from the previous read (`CDEMO-CUST-ID`) to the read key field (`WS-CARD-RID-CUST-ID`), then performs `9400-GETCUSTDATA-BYCUST` which executes:
 
 ```cobol
 EXEC CICS READ
@@ -1262,13 +915,15 @@ EXEC CICS READ
 END-EXEC
 ```
 
-**Step 4: Store Fetched Data** (lines 3801-3886) moves data from file records to `ACUP-OLD-*` working storage fields.
+This reads the customer master file (CUSTDAT) to retrieve customer demographics including name, address, phone numbers, SSN, date of birth, government ID, FICO score, and EFT account ID. If not found, it sets error flags and exits.
+
+**Step 4: Store Fetched Data** (lines 3801-3886) - The `9500-STORE-FETCHED-DATA` paragraph moves all fields from the three file records into the `ACUP-OLD-*` working storage fields. This preserves the original values for later comparison during updates. Account fields are moved to `ACUP-OLD-ACCT-DATA` and customer fields to `ACUP-OLD-CUST-DATA`. For date fields, the program splits the YYYY-MM-DD format into separate year, month, and day components. For phone numbers, it parses the (999)999-9999 format into separate area code, prefix, and line number components.
 
 ### 6.8 Update Processing
 
-The `9600-WRITE-PROCESSING` paragraph (lines 3888-4107) implements the database update with proper locking:
+The `9600-WRITE-PROCESSING` paragraph (lines 3888-4107) implements the database update with proper locking and transaction integrity.
 
-**Lock Account Record** (lines 3894-3903):
+**Locking Phase** - The program first attempts to lock both records for exclusive update. For the account record (lines 3894-3903):
 
 ```cobol
 EXEC CICS READ
@@ -1283,7 +938,9 @@ EXEC CICS READ
 END-EXEC
 ```
 
-**Lock Customer Record** (lines 3921-3930):
+If the response is not normal, it sets the could-not-lock flag (`COULD-NOT-LOCK-ACCT-FOR-UPDATE`), displays an error message, and exits without updating.
+
+For the customer record (lines 3921-3930):
 
 ```cobol
 EXEC CICS READ
@@ -1298,20 +955,15 @@ EXEC CICS READ
 END-EXEC
 ```
 
-**Optimistic Concurrency Check** (lines 3947-3952):
+If locking fails, it sets the lock error flag and exits.
 
-```cobol
-PERFORM 9700-CHECK-CHANGE-IN-REC
-   THRU 9700-CHECK-CHANGE-IN-REC-EXIT
+**Optimistic Concurrency Check** (lines 3947-3952) - The program performs `9700-CHECK-CHANGE-IN-REC` which compares every field in the locked records against the `ACUP-OLD-*` values that were originally fetched. This implements optimistic locking to detect concurrent updates.
 
-IF DATA-WAS-CHANGED-BEFORE-UPDATE
-   GO TO 9600-WRITE-PROCESSING-EXIT
-END-IF
-```
+The `9700-CHECK-CHANGE-IN-REC` paragraph (lines 4109-4195) performs field-by-field comparison. For each field, it checks if the value in the locked record differs from the original value. If any field has changed, another user modified the data concurrently, so it sets the `DATA-WAS-CHANGED-BEFORE-UPDATE` flag, displays an error message, and exits. If no concurrent changes are detected, the update can proceed safely.
 
-The `9700-CHECK-CHANGE-IN-REC` paragraph (lines 4109-4195) compares locked records against `ACUP-OLD-*` values to detect concurrent updates.
+**Prepare Update Records** (lines 3954-4061) - The program builds the update records by moving values from `ACUP-NEW-*` working storage to the update record structures (`ACCT-UPDATE-RECORD` and `CUST-UPDATE-RECORD`). For date fields, it reassembles the components using STRING statements. For example, the open date is assembled by stringing together the year, a dash, the month, another dash, and the day into the target date field. Phone numbers are similarly reassembled by stringing together the area code in parentheses, prefix, dash, and line number into the (999)999-9999 format.
 
-**Update Account Record** (lines 4065-4071):
+**Update Account Record** (lines 4065-4071) - The program executes:
 
 ```cobol
 EXEC CICS
@@ -1323,7 +975,9 @@ EXEC CICS
 END-EXEC
 ```
 
-**Update Customer Record with Rollback** (lines 4085-4103):
+If the response is not normal, it sets the update failed flag (`LOCKED-BUT-UPDATE-FAILED`) and exits.
+
+**Update Customer Record with Rollback** (lines 4085-4103) - The program executes:
 
 ```cobol
 EXEC CICS
@@ -1333,32 +987,25 @@ EXEC CICS
              RESP      (WS-RESP-CD)
              RESP2     (WS-REAS-CD)
 END-EXEC
-
-IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)
-  CONTINUE
-ELSE
-  SET LOCKED-BUT-UPDATE-FAILED    TO TRUE
-  EXEC CICS
-     SYNCPOINT ROLLBACK
-  END-EXEC
-  GO TO 9600-WRITE-PROCESSING-EXIT
-END-IF
 ```
 
-If customer update fails after account succeeded, `SYNCPOINT ROLLBACK` undoes the account update, ensuring transaction integrity.
+After the REWRITE, the program checks the response code. If successful, both updates succeeded and the transaction commits automatically when the program returns. However, if the customer update fails after the account update already succeeded, this creates a data inconsistency. To handle this, the program issues:
+
+```cobol
+EXEC CICS
+     SYNCPOINT ROLLBACK
+END-EXEC
+```
+
+This undoes the account update, ensuring transaction integrity - either both files are updated atomically or neither is updated. The program sets the update failed flag and exits.
 
 ### 6.9 Program Return
 
-Every processing path ends at `COMMON-RETURN` (lines 1007-1020):
+Every processing path ends at `COMMON-RETURN` (lines 1007-1020). The program first moves the return message to the error message field in the communication area (`CCARD-ERROR-MSG`). It then packs both communication areas into a single structure: the shared area (`CARDDEMO-COMMAREA`) goes into the first portion of `WS-COMMAREA`, and the program-specific area (`WS-THIS-PROGCOMMAREA`) goes into the second portion.
+
+Finally, it executes:
 
 ```cobol
-MOVE WS-RETURN-MSG     TO CCARD-ERROR-MSG
-
-MOVE  CARDDEMO-COMMAREA    TO WS-COMMAREA
-MOVE  WS-THIS-PROGCOMMAREA TO
-       WS-COMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:
-                    LENGTH OF WS-THIS-PROGCOMMAREA )
-
 EXEC CICS RETURN
      TRANSID (LIT-THISTRANID)
      COMMAREA (WS-COMMAREA)
@@ -1366,7 +1013,7 @@ EXEC CICS RETURN
 END-EXEC
 ```
 
-The program packs the COMMAREA and returns to CICS with TRANSID 'CAUP', implementing pseudo-conversational design.
+This returns control to CICS with transaction ID 'CAUP', passing the packed COMMAREA (2000 bytes total) to preserve state across pseudo-conversational interactions. The program releases all resources and waits for the next terminal input. When the user presses a key, CICS automatically restarts the program with the same transaction ID, restores the COMMAREA, and processing continues from the beginning with the preserved state intact.
 
 ---
 
