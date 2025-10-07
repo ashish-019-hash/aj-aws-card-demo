@@ -121,7 +121,7 @@ Provide a summary table of all identified flows:
 
 **Example:**
 ```
-| Daily Transaction Processing | CLOSEFIL, POSTTRAN, INTCALC, COMBTRAN, TRANIDX, OPENFIL | TRANSACT.VSAM, SYSTRAN GDG, ACCTFILE.KSDS | Process daily credit card transactions and update account balances | Daily | Yes |
+| Daily Transaction Processing | JOB01, JOB02, JOB03, JOB04, JOB05, JOB06 | TRANS.VSAM, STAGING.GDG, MASTER.KSDS | Process daily business transactions and update master records | Daily | Yes |
 ```
 
 ### Section 2: File Dependency Matrix
@@ -131,7 +131,7 @@ Document all files and their producer/consumer relationships:
 |-------------------|-----------|------------|-------------|---------------|------------------|
 
 **Column definitions:**
-- **File/Dataset Name:** Full dataset name (e.g., AWS.M2.CARDDEMO.CUSTFILE.KSDS)
+- **File/Dataset Name:** Full dataset name (e.g., APPL.PROD.MASTER.KSDS)
 - **File Type:** VSAM KSDS, VSAM ESDS, VSAM RRDS, GDG, PS, DB2 Table
 - **Created By:** Job(s) that create or update this file
 - **Consumed By:** Job(s) that read this file
@@ -140,8 +140,8 @@ Document all files and their producer/consumer relationships:
 
 **Example:**
 ```
-| AWS.M2.CARDDEMO.ACCTFILE.KSDS | VSAM KSDS | ACCTFILE | POSTTRAN, INTCALC, READACCT, CREASTMT | Master file | Credit card account master with balances and limits |
-| SYSTRAN(+1) | GDG | POSTTRAN | INTCALC, COMBTRAN | Temporary processing file | Daily transaction staging for interest calculation |
+| APPL.PROD.MASTER.KSDS | VSAM KSDS | FILESETUP | JOB02, JOB03, READJOB, REPTJOB | Master file | Business entity master with key attributes |
+| STAGING(+1) | GDG | JOB02 | JOB03, JOB04 | Temporary processing file | Transaction staging for downstream processing |
 ```
 
 ### Section 3: Flow Diagrams
@@ -153,37 +153,37 @@ Flow Name: Daily Transaction Processing
 ═══════════════════════════════════════
 
                     ┌─────────────┐
-                    │  CLOSEFIL   │  ← Close CICS files
+                    │   CLOSJOB   │  ← Close online files
                     │  (Utility)  │
                     └──────┬──────┘
                            │
                            ▼
                     ┌─────────────┐
-                    │  POSTTRAN   │  ← Post transactions
-                    │  (CBTRN02C) │     Creates: SYSTRAN(+1), TRAN.BACK(+1)
-                    └──────┬──────┘     Updates: ACCTFILE.KSDS
+                    │  TRANPROC   │  ← Process transactions
+                    │  (PROG01)   │     Creates: STAGING(+1), BACKUP(+1)
+                    └──────┬──────┘     Updates: MASTER.KSDS
                            │
                            ▼
                     ┌─────────────┐
-                    │   INTCALC   │  ← Calculate interest
-                    │  (CBACT04C) │     Reads: SYSTRAN(0)
-                    └──────┬──────┘     Updates: ACCTFILE.KSDS
+                    │   CALCJOB   │  ← Perform calculations
+                    │  (PROG02)   │     Reads: STAGING(0)
+                    └──────┬──────┘     Updates: MASTER.KSDS
                            │
                            ▼
                     ┌─────────────┐
-                    │  COMBTRAN   │  ← Combine transactions
-                    │  (UTILITY)  │     Reads: SYSTRAN(0), TRAN.BACK(0)
-                    └──────┬──────┘     Updates: TRANSACT.VSAM
+                    │  MERGEJOB   │  ← Merge data files
+                    │  (UTILITY)  │     Reads: STAGING(0), BACKUP(0)
+                    └──────┬──────┘     Updates: TRANS.VSAM
                            │
                            ▼
                     ┌─────────────┐
-                    │   TRANIDX   │  ← Build indexes
-                    │  (UTILITY)  │     Reads: TRANSACT.VSAM
+                    │   INDEXJOB  │  ← Build indexes
+                    │  (UTILITY)  │     Reads: TRANS.VSAM
                     └──────┬──────┘
                            │
                            ▼
                     ┌─────────────┐
-                    │   OPENFIL   │  ← Open CICS files
+                    │   OPENJOB   │  ← Open online files
                     │  (Utility)  │
                     └─────────────┘
 
@@ -231,42 +231,42 @@ Legend:
 ```
 **Daily Transaction Processing Flow**
 
-This critical flow executes every business day to process credit card transactions and update account balances.
+This critical flow executes every business day to process business transactions and update master records.
 
-**Trigger:** The flow begins at the end of the business day (typically 11:59 PM) after all online transaction entry is complete.
+**Trigger:** The flow begins at the end of the business day (typically 11:59 PM) after all online data entry is complete.
 
-**Step 1 - Close CICS Files (CLOSEFIL):**
-The CLOSEFIL utility closes all CICS-shared VSAM files (ACCTFILE, CUSTFILE, CARDFILE, CARDXREF, TRANSACT) to ensure no online updates occur during batch processing. This provides data consistency for the batch cycle.
+**Step 1 - Close Online Files (CLOSJOB):**
+The CLOSJOB utility closes all online-shared VSAM files (MASTER, ENTITY, RELATION, XREF, TRANS) to ensure no online updates occur during batch processing. This provides data consistency for the batch cycle.
 
-**Step 2 - Post Transactions (POSTTRAN - CBTRN02C):**
-The POSTTRAN program reads pending transactions from the TRANSACT.VSAM file and posts them to customer accounts in the ACCTFILE.KSDS. For each transaction:
+**Step 2 - Process Transactions (TRANPROC - PROG01):**
+The TRANPROC program reads pending transactions from the TRANS.VSAM file and applies them to master records in the MASTER.KSDS. For each transaction:
 - Validates the transaction against business rules
-- Updates account balance and available credit
+- Updates master record attributes
 - Creates staging files for downstream processing:
-  * SYSTRAN(+1) GDG: Transactions requiring interest calculation
-  * TRAN.BACK(+1) GDG: Transaction backup for audit
-  * DALYREJS(+1) GDG: Rejected transactions for review
+  * STAGING(+1) GDG: Transactions requiring additional processing
+  * BACKUP(+1) GDG: Transaction backup for audit
+  * REJECTS(+1) GDG: Rejected transactions for review
 
-If POSTTRAN fails, no accounts are updated and the entire batch cycle is aborted.
+If TRANPROC fails, no master records are updated and the entire batch cycle is aborted.
 
-**Step 3 - Calculate Interest (INTCALC - CBACT04C):**
-The INTCALC program reads the SYSTRAN(0) file created by POSTTRAN and calculates interest charges for applicable accounts. It updates the ACCTFILE.KSDS with new interest charges and appends interest transactions back to SYSTRAN(0) for inclusion in the final transaction file.
+**Step 3 - Perform Calculations (CALCJOB - PROG02):**
+The CALCJOB program reads the STAGING(0) file created by TRANPROC and performs required calculations for applicable records. It updates the MASTER.KSDS with new calculated values and appends result transactions back to STAGING(0) for inclusion in the final transaction file.
 
-**Step 4 - Combine Transactions (COMBTRAN):**
-The COMBTRAN utility merges all transaction sources:
-- SYSTRAN(0): Posted and interest transactions
-- TRAN.BACK(0): Transaction backup
-- Combines into the permanent TRANSACT.VSAM master file
+**Step 4 - Merge Data Files (MERGEJOB):**
+The MERGEJOB utility merges all transaction sources:
+- STAGING(0): Processed and calculated transactions
+- BACKUP(0): Transaction backup
+- Combines into the permanent TRANS.VSAM master file
 
-**Step 5 - Build Indexes (TRANIDX):**
-The TRANIDX utility reads the updated TRANSACT.VSAM file and builds alternate indexes for efficient transaction lookup by account, date, and merchant.
+**Step 5 - Build Indexes (INDEXJOB):**
+The INDEXJOB utility reads the updated TRANS.VSAM file and builds alternate indexes for efficient data lookup by key attributes.
 
-**Step 6 - Open CICS Files (OPENFIL):**
-The OPENFIL utility reopens all CICS-shared VSAM files, making updated data available to online users.
+**Step 6 - Open Online Files (OPENJOB):**
+The OPENJOB utility reopens all online-shared VSAM files, making updated data available to online users.
 
-**Business Outcome:** All daily transactions are posted to accounts, balances are updated, interest is calculated, and data is available for online access. The entire flow typically completes within 2-3 hours.
+**Business Outcome:** All daily transactions are processed, master records are updated, calculations are performed, and data is available for online access. The entire flow typically completes within 2-3 hours.
 
-**Critical Timing:** This flow must complete before 6:00 AM when online systems become available to East Coast users. Failure to meet this SLA impacts customer service.
+**Critical Timing:** This flow must complete before the start of the next business day when online systems become available. Failure to meet this SLA impacts business operations.
 ```
 
 ### Section 5: Flow Specifications
@@ -287,14 +287,14 @@ For each flow, provide detailed technical specifications:
 ```
 | Flow Name | Daily Transaction Processing |
 |-----------|------------------------------|
-| **Jobs in Sequence** | 1. CLOSEFIL, 2. POSTTRAN, 3. INTCALC, 4. COMBTRAN, 5. TRANIDX, 6. OPENFIL |
-| **Primary Files** | Input: TRANSACT.VSAM.KSDS (pending transactions)<br>Output: ACCTFILE.KSDS (updated), SYSTRAN GDG, TRANSACT.VSAM (final) |
-| **COBOL Programs** | CBTRN02C (POSTTRAN), CBACT04C (INTCALC) |
+| **Jobs in Sequence** | 1. CLOSJOB, 2. TRANPROC, 3. CALCJOB, 4. MERGEJOB, 5. INDEXJOB, 6. OPENJOB |
+| **Primary Files** | Input: TRANS.VSAM.KSDS (pending transactions)<br>Output: MASTER.KSDS (updated), STAGING GDG, TRANS.VSAM (final) |
+| **COBOL Programs** | PROG01 (TRANPROC), PROG02 (CALCJOB) |
 | **Execution Pattern** | Sequential - Each job depends on prior job's completion |
-| **Dependencies** | Requires completion of online transaction entry (11:59 PM cutoff) |
-| **Timing Window** | Start: 12:00 AM, Duration: 2-3 hours, Deadline: 6:00 AM EST |
-| **Recovery Procedure** | 1. Restore ACCTFILE from backup, 2. Reprocess from TRAN.BACK, 3. Rerun from failure point |
-| **Success Criteria** | All jobs RC=0, ACCTFILE balances match control totals, files reopened for CICS |
+| **Dependencies** | Requires completion of online data entry (end of business day) |
+| **Timing Window** | Start: 12:00 AM, Duration: 2-3 hours, Deadline: Start of business day |
+| **Recovery Procedure** | 1. Restore MASTER from backup, 2. Reprocess from BACKUP, 3. Rerun from failure point |
+| **Success Criteria** | All jobs RC=0, MASTER records match control totals, files reopened for online access |
 ```
 
 ### Section 6: Parallel Execution Opportunities
@@ -305,8 +305,8 @@ Identify jobs that can execute concurrently to optimize batch processing:
 
 **Example:**
 ```
-| File Setup Jobs | CUSTFILE, ACCTFILE, CARDFILE, XREFFILE, TRANTYPE, TRANCATG | Independent VSAM files | No shared dependencies | Can reduce setup time from 30 minutes to 5 minutes with parallel execution |
-| Data Reading Jobs | READACCT, READCARD, READCUST, READXREF | Read-only access to separate VSAM files | Read-only, no updates | Reporting can execute 4x faster in parallel |
+| File Setup Jobs | MASTER01, MASTER02, MASTER03, XREF01, REFDATA1, REFDATA2 | Independent VSAM files | No shared dependencies | Can reduce setup time from 30 minutes to 5 minutes with parallel execution |
+| Data Reading Jobs | READMSTR, READENT, READCUST, READXREF | Read-only access to separate VSAM files | Read-only, no updates | Reporting can execute 4x faster in parallel |
 ```
 
 ### Section 7: Migration Considerations
@@ -339,7 +339,7 @@ Document factors critical for modernizing these job flows:
 - Data consistency requirements across multiple files
 - Recovery and rollback procedures that must be preserved
 
-The output file should be {application_name}_job_flows.md (e.g., CardDemo_job_flows.md). The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be {application_name}_job_flows.md (e.g., MyApplication_job_flows.md). The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
 
 ---
 
@@ -420,8 +420,8 @@ Your analysis will be considered successful when:
 ✓ Risk factors are identified for migration planning
 
 ### Business Value
-✓ Three critical processing paths (Daily Batch Cycle, Monthly Statement Cycle, Reference Data Refresh) are clearly documented with business context
-✓ Dependencies between flows are explicit (e.g., reporting depends on daily cycle)
+✓ All critical processing paths identified in the source document are clearly documented with business context
+✓ Dependencies between flows are explicit (e.g., reporting depends on transaction processing)
 ✓ Business impact of failures is documented for each critical flow
 ✓ Timing windows and SLAs are traceable to business requirements
 ✓ Data volumes and performance characteristics enable capacity planning
