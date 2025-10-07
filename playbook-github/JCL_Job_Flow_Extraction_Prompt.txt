@@ -74,7 +74,7 @@ Follow this systematic approach to extract job flows from the JCL analysis docum
 
 ### Step 6: Distinguish Sequential vs. Parallel Execution
 - **Sequential flows:** Jobs that must execute in order due to file dependencies
-  - Example: POSTTRAN must complete before INTCALC (INTCALC reads POSTTRAN's output)
+  - Example: JOB02 must complete before JOB03 (JOB03 reads JOB02's output)
 - **Parallel flows:** Jobs that can execute concurrently (no shared dependencies)
   - Example: File setup jobs that create independent VSAM files
 - Identify synchronization points where parallel streams converge
