@@ -1,0 +1,461 @@
+# JCL Job Flow Extraction Prompt
+
+## 1. Role to Play
+
+You are an expert JCL batch processing analyst with deep knowledge of:
+- JCL (Job Control Language) batch processing and job dependencies
+- Mainframe file systems (VSAM KSDS/ESDS/RRDS, GDG, Sequential PS files)
+- File-based data flow analysis and dependency mapping
+- Batch processing chains, parallel execution, and critical paths
+- Legacy system migration and modernization
+- Workflow orchestration concepts (Apache Airflow, AWS Step Functions, Azure Data Factory)
+- COBOL program integration with JCL jobs
+
+Your expertise includes understanding file creation/consumption patterns, tracing data flows through batch processing chains, identifying sequential vs. parallel execution opportunities, and documenting job flows for migration to modern orchestration frameworks.
+
+---
+
+## 2. Your Task
+
+Analyze the provided JCL job analysis documentation and extract comprehensive job flow documentation that identifies distinct processing chains based on file dependencies. Your analysis must be thorough and accurate, as the success of migration planning depends entirely on the quality of this extraction.
+
+**Input:** The jcl-job-analysis.md file from the 01.phase-1-output folder, which contains comprehensive analysis of all production JCL jobs including:
+- Job inventory organized by 7 functional categories
+- Detailed DD Name Analysis tables showing file usage
+- Dependencies sections with Inputs/Outputs/Consumers for each job
+- Critical Processing Paths section
+- Business context for each job
+
+**Goal:** Extract and document distinct job flows by tracing file creation and consumption patterns. Identify which jobs produce files and which jobs consume those files to map complete processing streams that represent business workflows.
+
+**Output:** Comprehensive job flow documentation in structured markdown format showing processing chains, file dependencies, execution sequences, and business context.
+
+---
+
+## 3. Analysis Approach
+
+Follow this systematic approach to extract job flows from the JCL analysis documentation:
+
+### Step 1: Review Job Inventory and Categories
+- Identify the total number of jobs analyzed
+- Review the 7 functional categories (File Setup, Transaction Processing, Reporting, etc.)
+- Note any pre-identified critical processing paths
+- Understand the overall business processes supported
+
+### Step 2: Extract File Dependency Data
+- For each job, extract information from the "Dependencies" section:
+  - **Inputs:** Files/datasets the job reads
+  - **Outputs:** Files/datasets the job creates or updates
+  - **Consumers:** Other jobs that use this job's outputs
+- Build a comprehensive list of all files/datasets mentioned
+- Note file types (VSAM KSDS/ESDS/RRDS, GDG, PS, DB2 tables)
+
+### Step 3: Build File-to-Job Relationship Matrix
+- For each file/dataset, document:
+  - Which job(s) create or update it (producers)
+  - Which job(s) read it (consumers)
+  - File type and characteristics (KSDS key structure, GDG generations, etc.)
+  - Business purpose of the file
+- Identify shared files accessed by multiple jobs
+- Note files that are part of processing chains (output of Job A → input to Job B)
+
+### Step 4: Identify Processing Chains
+- Trace file flows to identify job sequences:
+  - Job A creates File X → Job B reads File X → Job B creates File Y → Job C reads File Y
+- Use the "Consumers" field to identify downstream jobs
+- Follow chains from initial data loading through final output generation
+- Map both simple chains (A→B→C) and complex flows (A→B,C→D)
+
+### Step 5: Extract Critical Processing Paths
+- Reference the "Critical Processing Paths" section in the source document
+- Document known business-critical flows (e.g., Daily Batch Cycle, Monthly Statement Cycle)
+- Verify these paths match the file dependency patterns identified in Step 4
+- Note timing requirements, SLAs, or execution windows
+
+### Step 6: Distinguish Sequential vs. Parallel Execution
+- **Sequential flows:** Jobs that must execute in order due to file dependencies
+  - Example: POSTTRAN must complete before INTCALC (INTCALC reads POSTTRAN's output)
+- **Parallel flows:** Jobs that can execute concurrently (no shared dependencies)
+  - Example: File setup jobs that create independent VSAM files
+- Identify synchronization points where parallel streams converge
+- Note opportunities for parallel execution in modernized workflows
+
+### Step 7: Extract Business Context and Timing
+- From the "Business Context" section of each job, extract:
+  - Business process supported
+  - Business impact of job failure
+  - Data volumes and performance characteristics
+  - Execution frequency (daily, monthly, on-demand)
+- Note any timing constraints or batch windows
+- Identify business rules embedded in job processing
+
+### Step 8: Create Narrative Flow Stories
+- Synthesize all extracted information into chronological narratives
+- For each identified flow, describe:
+  - Triggering event or starting condition
+  - Sequence of job executions with business purpose
+  - Data transformations and file movements
+  - Decision points and conditional logic
+  - Final outputs and business outcomes
+- Use plain English, minimizing technical jargon for SME review
+
+---
+
+## 4. Output Requirements
+
+Your output must include the following structured sections:
+
+### Section 1: Job Flow Catalog
+Provide a summary table of all identified flows:
+
+| Flow Name | Jobs Involved | Key Files | Business Purpose | Execution Frequency | Critical Path |
+|-----------|---------------|-----------|------------------|---------------------|---------------|
+
+**Column definitions:**
+- **Flow Name:** Descriptive name for the processing flow
+- **Jobs Involved:** List of JCL job names in execution order
+- **Key Files:** Primary files created/consumed in this flow
+- **Business Purpose:** What business process this flow accomplishes
+- **Execution Frequency:** Daily, monthly, on-demand, etc.
+- **Critical Path:** Yes/No - Is this a business-critical flow?
+
+**Example:**
+```
+| Daily Transaction Processing | CLOSEFIL, POSTTRAN, INTCALC, COMBTRAN, TRANIDX, OPENFIL | TRANSACT.VSAM, SYSTRAN GDG, ACCTFILE.KSDS | Process daily credit card transactions and update account balances | Daily | Yes |
+```
+
+### Section 2: File Dependency Matrix
+Document all files and their producer/consumer relationships:
+
+| File/Dataset Name | File Type | Created By | Consumed By | Usage Pattern | Business Purpose |
+|-------------------|-----------|------------|-------------|---------------|------------------|
+
+**Column definitions:**
+- **File/Dataset Name:** Full dataset name (e.g., AWS.M2.CARDDEMO.CUSTFILE.KSDS)
+- **File Type:** VSAM KSDS, VSAM ESDS, VSAM RRDS, GDG, PS, DB2 Table
+- **Created By:** Job(s) that create or update this file
+- **Consumed By:** Job(s) that read this file
+- **Usage Pattern:** Master file, transaction file, temporary file, reference data, etc.
+- **Business Purpose:** What business data this file contains
+
+**Example:**
+```
+| AWS.M2.CARDDEMO.ACCTFILE.KSDS | VSAM KSDS | ACCTFILE | POSTTRAN, INTCALC, READACCT, CREASTMT | Master file | Credit card account master with balances and limits |
+| SYSTRAN(+1) | GDG | POSTTRAN | INTCALC, COMBTRAN | Temporary processing file | Daily transaction staging for interest calculation |
+```
+
+### Section 3: Flow Diagrams
+Create visual representations of job flows using ASCII art. Show execution sequence, parallel processing, and file dependencies.
+
+**Format:**
+```
+Flow Name: Daily Transaction Processing
+═══════════════════════════════════════
+
+                    ┌─────────────┐
+                    │  CLOSEFIL   │  ← Close CICS files
+                    │  (Utility)  │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  POSTTRAN   │  ← Post transactions
+                    │  (CBTRN02C) │     Creates: SYSTRAN(+1), TRAN.BACK(+1)
+                    └──────┬──────┘     Updates: ACCTFILE.KSDS
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   INTCALC   │  ← Calculate interest
+                    │  (CBACT04C) │     Reads: SYSTRAN(0)
+                    └──────┬──────┘     Updates: ACCTFILE.KSDS
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  COMBTRAN   │  ← Combine transactions
+                    │  (UTILITY)  │     Reads: SYSTRAN(0), TRAN.BACK(0)
+                    └──────┬──────┘     Updates: TRANSACT.VSAM
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   TRANIDX   │  ← Build indexes
+                    │  (UTILITY)  │     Reads: TRANSACT.VSAM
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   OPENFIL   │  ← Open CICS files
+                    │  (Utility)  │
+                    └─────────────┘
+
+Legend:
+  │  = Sequential dependency (must execute in order)
+  ▼  = Execution flow direction
+  [CRITICAL] = Business-critical job
+```
+
+**For parallel flows:**
+```
+                    ┌─────────────┐
+                    │  TRIGGER    │
+                    └──────┬──────┘
+                           │
+           ┌───────────────┼───────────────┐
+           │               │               │
+           ▼               ▼               ▼
+    ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+    │   JOB A     │ │   JOB B     │ │   JOB C     │  ← Parallel execution
+    │  (File X)   │ │  (File Y)   │ │  (File Z)   │
+    └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
+           │               │               │
+           └───────────────┼───────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  MERGE JOB  │  ← Synchronization point
+                    └─────────────┘
+```
+
+### Section 4: Flow Narratives (Business Logic)
+**Comprehensive Story:** For each identified flow, create a chronological narrative that explains the business process in plain English. Avoid COBOL code snippets; instead, describe the logic in business terms while referencing specific jobs and files.
+
+**Structure each narrative with:**
+- **Flow trigger:** What initiates this processing chain
+- **Execution sequence:** Step-by-step job execution with business purpose
+- **Data transformations:** How data moves and changes through the flow
+- **File interactions:** Which files are read, created, or updated at each step
+- **Business outcomes:** What business value is achieved
+- **Error handling:** What happens if jobs fail
+- **Timing constraints:** Batch windows, SLAs, dependencies
+
+**Example format:**
+```
+**Daily Transaction Processing Flow**
+
+This critical flow executes every business day to process credit card transactions and update account balances.
+
+**Trigger:** The flow begins at the end of the business day (typically 11:59 PM) after all online transaction entry is complete.
+
+**Step 1 - Close CICS Files (CLOSEFIL):**
+The CLOSEFIL utility closes all CICS-shared VSAM files (ACCTFILE, CUSTFILE, CARDFILE, CARDXREF, TRANSACT) to ensure no online updates occur during batch processing. This provides data consistency for the batch cycle.
+
+**Step 2 - Post Transactions (POSTTRAN - CBTRN02C):**
+The POSTTRAN program reads pending transactions from the TRANSACT.VSAM file and posts them to customer accounts in the ACCTFILE.KSDS. For each transaction:
+- Validates the transaction against business rules
+- Updates account balance and available credit
+- Creates staging files for downstream processing:
+  * SYSTRAN(+1) GDG: Transactions requiring interest calculation
+  * TRAN.BACK(+1) GDG: Transaction backup for audit
+  * DALYREJS(+1) GDG: Rejected transactions for review
+
+If POSTTRAN fails, no accounts are updated and the entire batch cycle is aborted.
+
+**Step 3 - Calculate Interest (INTCALC - CBACT04C):**
+The INTCALC program reads the SYSTRAN(0) file created by POSTTRAN and calculates interest charges for applicable accounts. It updates the ACCTFILE.KSDS with new interest charges and appends interest transactions back to SYSTRAN(0) for inclusion in the final transaction file.
+
+**Step 4 - Combine Transactions (COMBTRAN):**
+The COMBTRAN utility merges all transaction sources:
+- SYSTRAN(0): Posted and interest transactions
+- TRAN.BACK(0): Transaction backup
+- Combines into the permanent TRANSACT.VSAM master file
+
+**Step 5 - Build Indexes (TRANIDX):**
+The TRANIDX utility reads the updated TRANSACT.VSAM file and builds alternate indexes for efficient transaction lookup by account, date, and merchant.
+
+**Step 6 - Open CICS Files (OPENFIL):**
+The OPENFIL utility reopens all CICS-shared VSAM files, making updated data available to online users.
+
+**Business Outcome:** All daily transactions are posted to accounts, balances are updated, interest is calculated, and data is available for online access. The entire flow typically completes within 2-3 hours.
+
+**Critical Timing:** This flow must complete before 6:00 AM when online systems become available to East Coast users. Failure to meet this SLA impacts customer service.
+```
+
+### Section 5: Flow Specifications
+For each flow, provide detailed technical specifications:
+
+| Flow Name | [Flow Name] |
+|-----------|-------------|
+| **Jobs in Sequence** | List all jobs in execution order with step numbers |
+| **Primary Files** | Key input and output files with types |
+| **COBOL Programs** | Programs called by jobs (if applicable) |
+| **Execution Pattern** | Sequential, Parallel, or Mixed |
+| **Dependencies** | External dependencies (time, file arrival, prior jobs) |
+| **Timing Window** | Start time, expected duration, deadline |
+| **Recovery Procedure** | Steps to recover from failure |
+| **Success Criteria** | How to determine successful completion |
+
+**Example:**
+```
+| Flow Name | Daily Transaction Processing |
+|-----------|------------------------------|
+| **Jobs in Sequence** | 1. CLOSEFIL, 2. POSTTRAN, 3. INTCALC, 4. COMBTRAN, 5. TRANIDX, 6. OPENFIL |
+| **Primary Files** | Input: TRANSACT.VSAM.KSDS (pending transactions)<br>Output: ACCTFILE.KSDS (updated), SYSTRAN GDG, TRANSACT.VSAM (final) |
+| **COBOL Programs** | CBTRN02C (POSTTRAN), CBACT04C (INTCALC) |
+| **Execution Pattern** | Sequential - Each job depends on prior job's completion |
+| **Dependencies** | Requires completion of online transaction entry (11:59 PM cutoff) |
+| **Timing Window** | Start: 12:00 AM, Duration: 2-3 hours, Deadline: 6:00 AM EST |
+| **Recovery Procedure** | 1. Restore ACCTFILE from backup, 2. Reprocess from TRAN.BACK, 3. Rerun from failure point |
+| **Success Criteria** | All jobs RC=0, ACCTFILE balances match control totals, files reopened for CICS |
+```
+
+### Section 6: Parallel Execution Opportunities
+Identify jobs that can execute concurrently to optimize batch processing:
+
+| Parallel Group | Jobs | Files Accessed | Why Parallel? | Modernization Benefit |
+|----------------|------|----------------|---------------|----------------------|
+
+**Example:**
+```
+| File Setup Jobs | CUSTFILE, ACCTFILE, CARDFILE, XREFFILE, TRANTYPE, TRANCATG | Independent VSAM files | No shared dependencies | Can reduce setup time from 30 minutes to 5 minutes with parallel execution |
+| Data Reading Jobs | READACCT, READCARD, READCUST, READXREF | Read-only access to separate VSAM files | Read-only, no updates | Reporting can execute 4x faster in parallel |
+```
+
+### Section 7: Migration Considerations
+Document factors critical for modernizing these job flows:
+
+**File System Dependencies:**
+- List all VSAM files that need migration to relational databases or cloud storage
+- Identify GDG files that need versioning strategy in modern systems
+- Note CICS file sharing that requires transaction coordination
+
+**Timing and SLAs:**
+- Document batch windows and deadlines
+- Identify flows with hard time constraints
+- Note business-critical timing requirements
+
+**Data Volume and Performance:**
+- Estimate record counts and file sizes
+- Note processing times from Business Context sections
+- Identify performance-sensitive jobs
+
+**Modernization Opportunities:**
+- Jobs that can be parallelized (currently sequential but no true dependencies)
+- Processes that can be replaced with real-time processing
+- Complex file passing that can be simplified with databases
+- Batch processes that can become event-driven
+
+**Risk Factors:**
+- Business-critical flows that cannot tolerate downtime
+- Complex dependencies that need careful orchestration
+- Data consistency requirements across multiple files
+- Recovery and rollback procedures that must be preserved
+
+The output file should be {application_name}_job_flows.md (e.g., CardDemo_job_flows.md). The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+
+---
+
+## 5. Quality Requirements
+
+Your analysis must meet the following quality standards:
+
+### Accuracy
+- **100% accuracy** in extracting file dependencies from the source document
+- Job sequences must match exactly as documented in Dependencies sections
+- File names, types, and relationships must be precisely documented
+- All COBOL program references must be correctly identified
+
+### Completeness
+- **No omissions:** Every flow identified in Critical Processing Paths must be documented
+- All file dependencies from Dependencies sections must be captured
+- Every job in the inventory must be assigned to at least one flow
+- All parallel execution opportunities must be identified
+
+### Clarity
+- Technical details must be presented in a clear, organized manner
+- Flow narratives must be understandable by non-technical business SMEs
+- Use consistent file naming conventions throughout the documentation
+- Provide sufficient context for each documented flow
+
+### Focus on Migration Relevance
+- **Include:** File dependencies, job sequences, business logic, timing constraints
+- **Exclude:** Low-level JCL syntax details not relevant to workflow orchestration
+- Prioritize information critical for designing modern workflow orchestration
+- Highlight opportunities for optimization and modernization
+
+### Verifiability
+- Reference specific sections of the source jcl-job-analysis.md document
+- Link each flow back to the Jobs involved and their Dependencies sections
+- Include specific file names, dataset names, and job names from the source
+- Enable SMEs to verify accuracy against the source documentation
+
+### Traceability
+- Clearly link jobs to the files they produce and consume
+- Map complete data flows from initial input through final output
+- Show how files connect jobs into processing chains
+- Document dependencies and relationships between flows
+
+---
+
+## 6. Success Criteria
+
+Your analysis will be considered successful when:
+
+### Documentation Completeness
+✓ All 7 required output sections are fully documented
+✓ Every flow identified in Critical Processing Paths is analyzed and documented
+✓ File Dependency Matrix includes all files mentioned in Dependencies sections
+✓ Flow diagrams clearly show execution sequences and file dependencies
+✓ All parallel execution opportunities are identified and documented
+✓ Migration considerations address all key modernization factors
+
+### Technical Accuracy
+✓ Flow diagrams accurately represent job execution sequences
+✓ File dependencies match exactly with source document's Dependencies sections
+✓ Job-to-job relationships are correctly identified through file flows
+✓ COBOL programs are correctly associated with their JCL jobs
+✓ Parallel vs. sequential execution patterns are correctly classified
+
+### Narrative Quality
+✓ Flow narratives integrate technical details with business context seamlessly
+✓ SMEs can understand business processes without reading JCL or COBOL
+✓ All flows describe business outcomes and value delivered
+✓ Technical terminology is explained in business terms
+✓ Chronological flow stories follow logical execution sequences
+
+### Migration Readiness
+✓ Documentation provides sufficient information to design modern workflow orchestration
+✓ All file system dependencies are identified for data architecture design
+✓ Timing constraints and SLAs are clear for scheduling modern workflows
+✓ Parallel execution opportunities enable performance optimization
+✓ Modernization opportunities provide clear roadmap for improvements
+✓ Risk factors are identified for migration planning
+
+### Business Value
+✓ Three critical processing paths (Daily Batch Cycle, Monthly Statement Cycle, Reference Data Refresh) are clearly documented with business context
+✓ Dependencies between flows are explicit (e.g., reporting depends on daily cycle)
+✓ Business impact of failures is documented for each critical flow
+✓ Timing windows and SLAs are traceable to business requirements
+✓ Data volumes and performance characteristics enable capacity planning
+
+### SME Validation
+✓ A subject matter expert can review the documentation and confirm it accurately represents the batch processing
+✓ The flow narratives enable business users to validate process correctness
+✓ Non-technical stakeholders can understand what each flow accomplishes
+✓ Operations teams can use this as a reference for understanding job dependencies
+✓ Migration architects have sufficient detail to design modern replacements
+
+---
+
+## Input Instructions
+
+Please provide the jcl-job-analysis.md file for analysis. This file should be located in the 01.phase-1-output folder and should contain:
+- Job inventory with functional categories
+- DD Name Analysis tables showing file usage
+- Dependencies sections with Inputs/Outputs/Consumers for each job
+- Business Context sections explaining business purpose
+- Critical Processing Paths section (if available)
+
+**Analysis Focus Areas:**
+1. **Dependencies sections:** Primary source for input/output file relationships
+2. **DD Name Analysis tables:** Detailed file usage patterns and dataset names
+3. **Critical Processing Paths:** Pre-identified business-critical flows
+4. **Business Context:** Business purpose, impact, and timing requirements
+5. **Job Inventory:** Complete list of all jobs to be organized into flows
+
+**Execution:**
+Once provided, perform the complete analysis following the 8-step approach and deliver the structured documentation with all 7 required sections according to the requirements above.
+
+The output should be a comprehensive markdown document that serves as the foundation for:
+- Migration planning and architecture design
+- Modern workflow orchestration implementation
+- Business process validation and optimization
+- Operational runbook creation for new systems
