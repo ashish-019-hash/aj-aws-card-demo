@@ -32,6 +32,10 @@ Analyze the provided JCL job analysis documentation and extract comprehensive jo
 
 ---
 
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT application or job set** (e.g., Application A jobs, Application B jobs, etc.), not an attempt to get a better response for the same analysis. Always explicitly specify which application or job set you are analyzing at the beginning of your response. Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each analysis is independent.
+
+---
+
 ## 3. Analysis Approach
 
 Follow this systematic approach to extract job flows from the JCL analysis documentation:
