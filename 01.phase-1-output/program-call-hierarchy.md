@@ -39,43 +39,6 @@
 | COACTUPC | COMEN01C | XCTL | When F3 pressed (exit) | CARDDEMO-COMMAREA (2000 bytes): CDEMO-USER-ID, CDEMO-USER-TYPE, CDEMO-FROM-PROGRAM, CDEMO-FROM-TRANID, CDEMO-TO-PROGRAM, CDEMO-TO-TRANID, CDEMO-ACCT-ID, CDEMO-CUST-ID | Return to main menu or calling program after committing changes via SYNCPOINT | COACTUPC_extract.md, Lines 927-959 |
 | COACTVWC | COMEN01C | XCTL | When F3 pressed (exit) | CARDDEMO-COMMAREA (2000 bytes): CDEMO-USER-ID, CDEMO-USER-TYPE, CDEMO-FROM-PROGRAM, CDEMO-FROM-TRANID, CDEMO-TO-PROGRAM, CDEMO-TO-TRANID, CDEMO-ACCT-ID, CDEMO-CUST-ID | Return to main menu or calling program (read-only, no SYNCPOINT) | COACTVWC_extract.md, Lines 324-352 |
 
-**Call Relationship Details:**
-
-### CBACT01C → COBDATFT (Date Conversion)
-- **Call Type:** Static CALL to external assembler program
-- **Frequency:** Once per input record processed (high frequency)
-- **Parameter Structure:**
-  - Input: CODATECN-TYPE='2' (YYYY-MM-DD format), CODATECN-OUTTYPE='2' (YYYYMMDD format), CODATECN-INP-DATE (date to convert)
-  - Output: CODATECN-OUT-DATE (converted date)
-- **Business Purpose:** Reformat account reissue dates for output files
-- **Performance Impact:** Called in loop, adds overhead to batch processing
-
-### CBACT01C → CEE3ABD (Error Handling)
-- **Call Type:** Static CALL to IBM Language Environment service
-- **Frequency:** Only on error conditions (file open/read/write/close failures)
-- **Parameters:**
-  - ABCODE=999 (abend completion code S999)
-  - TIMING=0 (immediate termination, no dump suppression)
-- **Business Purpose:** Ensure batch job fails immediately on any file error
-- **Effect:** Program terminates with S999 abend code
-
-### COACTUPC → COMEN01C (Navigation)
-- **Call Type:** EXEC CICS XCTL (transfer control to another program)
-- **Frequency:** Once per user session when F3 is pressed
-- **COMMAREA Contents:**
-  - User session: CDEMO-USER-ID, CDEMO-USER-TYPE
-  - Navigation context: CDEMO-FROM-PROGRAM, CDEMO-FROM-TRANID, CDEMO-TO-PROGRAM, CDEMO-TO-TRANID
-  - Business context: CDEMO-ACCT-ID, CDEMO-CUST-ID
-- **Pre-Transfer Actions:** Issues EXEC CICS SYNCPOINT to commit all file updates
-- **Navigation Logic:** Returns to calling program if CDEMO-FROM-PROGRAM is set, otherwise defaults to COMEN01C main menu
-
-### COACTVWC → COMEN01C (Navigation)
-- **Call Type:** EXEC CICS XCTL (transfer control to another program)
-- **Frequency:** Once per user session when F3 is pressed
-- **COMMAREA Contents:** Same structure as COACTUPC (user session, navigation context, business context)
-- **Pre-Transfer Actions:** Updates navigation context only (no SYNCPOINT needed as this is read-only)
-- **Navigation Logic:** Same as COACTUPC - returns to calling program or main menu
-
 ---
 
 ## 3. Complete Call Hierarchy Tree
