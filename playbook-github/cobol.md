@@ -25,6 +25,9 @@ Your analysis must capture every aspect of the program that could impact moderni
 - **Business Process Integration**: How programs fit into broader business workflows
 - **Technical Architecture**: Integration with mainframe infrastructure and services
 - **Operational Characteristics**: Runtime behavior, performance, and monitoring requirements
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT program or codebase** (e.g., PROG001, PROG002, different applications, etc.), not an attempt to get a better response for the same program. Even if you are re-analyzing the same program or codebase, treat each run as an independent analysis. Always explicitly specify which program or codebase you are analyzing at the beginning of your response. Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each analysis is independent.
+
+
 
 ## Analysis Approach
 

@@ -6,6 +6,9 @@ You are a COBOL domain expert and modernization analyst specializing in extracti
 ## Your Task
 Analyze all files in the attached repo and extract ONLY business-level validation rules for migration to modern validation layers (frontend + backend APIs).
 You have to pick the codebase from the 00.phase-1-input folder of the attached repo.
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT application or codebase** (e.g., CardDemo application, PayrollApp, InventorySystem, etc.), not an attempt to get a better response for the same application. Even if you are re-analyzing the same application or codebase, treat each run as an independent analysis. Always explicitly specify which application or codebase you are analyzing at the beginning of your response. Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each analysis is independent.
+
+
 
 **Include ONLY:**
 - Field-level input validations (non-empty, length checks, format constraints)
