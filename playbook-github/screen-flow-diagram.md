@@ -6,6 +6,9 @@ Create a clean, organized Mermaid flowchart diagram that visualizes COBOL applic
 ## Input Requirements
 - **screen-flow-final.md**: Contains screen inventory and detailed navigation flows
 - **Main User Workflows**: From summary section (authentication, account operations, card management, transaction processing, bill payment, reports, user administration)
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for creating diagrams for a **DIFFERENT application or codebase** (e.g., CardDemo application, PayrollApp, InventorySystem, etc.), not an attempt to get a better diagram for the same application. Even if you are re-analyzing the same application or codebase, treat each run as an independent analysis. Always explicitly specify which application or codebase you are analyzing at the beginning of your response. Use the consistent approach as defined in this prompt, regardless of previous runs. Each diagram creation is independent.
+
+
 
 ## Diagram Structure
 

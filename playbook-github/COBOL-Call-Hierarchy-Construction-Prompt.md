@@ -14,6 +14,8 @@ Analyze the provided collection of individual COBOL program extraction documents
 
 **Important**: You are constructing the call hierarchy for the **[APPLICATION_NAME]** application. This is an independent analysis, not a refinement of previous outputs. Use consistent format and approach for all application analyses.
 
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT application** (e.g., CardDemo, PayrollApp, InventorySystem, etc.), not an attempt to get a better response for the same application. Always explicitly specify the application name you are analyzing at the beginning of your response (ensure **[APPLICATION_NAME]** is replaced with the actual application name). Use the consistent format and approach as defined in this prompt, regardless of previous runs. Each application analysis is independent.
+
 ## Analysis Approach
 
 Follow this systematic approach to construct the call hierarchy:

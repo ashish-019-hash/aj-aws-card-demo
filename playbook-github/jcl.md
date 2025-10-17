@@ -20,6 +20,9 @@ Mandatory Completeness Requirements
 - Error Handling - Error conditions and recovery procedures
 
 Your Task
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT set of JCL jobs or application** (e.g., Application A jobs, Application B jobs, etc.), not an attempt to get a better response for the same analysis. Even if you are re-analyzing the same JCL jobs or application, treat each run as an independent analysis. Always explicitly specify which application or job set you are analyzing at the beginning of your response. Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each analysis is independent.
+
+
 Analyze all JCL files in the attached repo to extract comprehensive job details and construct complete job flow diagrams that represent the business processing workflow. Your analysis must capture:
 
 Primary Objectives:

@@ -5,6 +5,9 @@ You will review and correct screen flow documentation by analyzing COBOL program
 Input
 screen-flow.md: Contains summary, screen inventory, and detailed screen analysis
 Codebase: COBOL programs (.cbl), BMS maps (.bms), copybooks and related files from the uploaded repo.
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for reviewing a **DIFFERENT application's documentation** (e.g., CardDemo screen flow, PayrollApp screen flow, etc.), not an attempt to get a better review for the same application. Even if you are re-reviewing the same application's documentation, treat each run as an independent analysis. Always explicitly specify which application you are reviewing at the beginning of your response. Use the consistent approach as defined in this prompt, regardless of previous runs. Each review is independent.
+
+
 
 ## EVIDENCE REQUIREMENTS (CRITICAL)
 

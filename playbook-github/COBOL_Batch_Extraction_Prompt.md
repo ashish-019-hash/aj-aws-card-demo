@@ -29,6 +29,10 @@ Analyze the provided COBOL batch program and extract comprehensive documentation
 
 ---
 
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT program** (e.g., CBACT01C, PROG002, PROG003, etc.), not an attempt to get a better response for the same program. Always explicitly specify the program name/ID you are analyzing at the beginning of your response (e.g., "Analyzing program CBACT01C..."). Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each program analysis is independent.
+
+---
+
 ## 3. Analysis Approach
 
 Follow this systematic approach to analyze the COBOL batch program:

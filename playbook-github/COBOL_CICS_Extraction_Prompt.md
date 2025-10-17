@@ -22,6 +22,8 @@ Analyze the provided COBOL CICS program and extract comprehensive documentation 
 
 **Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the COBOL program from the  00.phase-1-input folder of the attached repo.
 
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT program** (e.g., COACTUPC, COACTVWC, PROG003, etc.), not an attempt to get a better response for the same program. Always explicitly specify the program name/ID you are analyzing at the beginning of your response (e.g., "Analyzing program COACTUPC..."). Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each program analysis is independent.
+
 ---
 
 ## 3. Analysis Approach
