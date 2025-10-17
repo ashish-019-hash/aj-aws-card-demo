@@ -26,6 +26,8 @@ Enhance existing program extraction documents by traversing the call hierarchy a
 
 **Important**: This is an iterative enrichment process that starts with existing extraction documents and makes them more comprehensive by adding call tree context. You are NOT re-extracting programs from scratch.
 
+**Important Note on Multiple Runs:** When using this prompt multiple times, each run is for enriching a **DIFFERENT program's extraction document** (e.g., CBACT01C, COACTUPC, PROG003, etc.), not an attempt to get a better enrichment for the same program. Even if you are re-enriching the same program's extraction document, treat each run as an independent analysis. Always explicitly specify which program you are enriching at the beginning of your response. Use the consistent enrichment format as defined in this prompt, regardless of previous runs. Each enrichment is independent.
+
 ## Analysis Approach
 
 Follow this systematic approach to enrich program extraction documents:
