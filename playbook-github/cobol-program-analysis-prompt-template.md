@@ -28,11 +28,10 @@ You will analyze a COBOL program source code and extract **all** relevant inform
 4. **Structured**: Organize information logically for different team personas (Frontend, Backend, Database, Integration)
 5. **Technology-Agnostic**: Don't assume specific target frameworks, but provide enough detail for any modern stack
 
-### Input You'll Receive
-- COBOL program source code (CBL file)
-- Associated copybooks (if applicable)
-- BMS map definitions (for screen layouts)
-- Any related documentation
+### Input You'll Receive:
+You will be getting a COBOL program name along with the prompt.
+- Codebase will be available in the `00.phase-1-input` folder
+- Related documents will be available in the `01.phase-1-output` folder
 
 ### Output You'll Generate
 Comprehensive migration documentation with these sections:
