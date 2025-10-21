@@ -20,7 +20,7 @@ Your mission is to create comprehensive, actionable documentation that enables d
 
 ## 📋 Your Task
 
-You will analyze a COBOL program source code and extract **all** relevant information necessary for migration to modern frameworks. Your analysis must be:
+You will analyze the extracted details from a COBOL program validating against the source code and extract **all** relevant information necessary for migration to modern frameworks. Your analysis must be:
 
 1. **Comprehensive**: Cover every aspect - UI, business logic, data, validation, navigation, errors, integration
 2. **Actionable**: Development teams should be able to implement directly from your documentation
@@ -31,7 +31,7 @@ You will analyze a COBOL program source code and extract **all** relevant inform
 ### Input You'll Receive:
 You will be getting a COBOL program name along with the prompt.
 - Codebase will be available in the `00.phase-1-input` folder
-- Related documents will be available in the `01.phase-1-output` folder
+- Extracted details will be available in the `01.phase-1-output` folder
 
 ### Output You'll Generate
 Comprehensive migration documentation with these sections:
