@@ -38,7 +38,7 @@ You have to pick the codebase from the 00.phase-1-input folder of the attached r
 - Validation Condition (English or pseudocode)
 - Trigger Conditions (IF/WHEN logic that activates validation)
 
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
 
 ## Quality Requirements
 - **Complete Coverage**: Every COBOL file scanned
@@ -52,4 +52,5 @@ The output file should be added to the 01.phase-1-output folder as a PR to the a
 - **Accuracy**: 100% of rules have correct source code references
 - **Business Relevance**: All rules serve legitimate data protection purposes
 - **Modernization Ready**: Rules suitable for implementation in target validation layers
+
 - **Documentation Quality**: Clear, consistent format enabling easy migration
