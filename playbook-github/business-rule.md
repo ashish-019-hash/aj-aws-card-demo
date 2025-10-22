@@ -126,6 +126,7 @@ Once you got the overview for every COBOL code in the repo
 ## Deliverables
 1. **Business Rules Catalog** - Documented rules using template
 
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
+
 
 **Remember**: Code is the source of truth. Extract business knowledge that will be valuable in any modern system implementation.
