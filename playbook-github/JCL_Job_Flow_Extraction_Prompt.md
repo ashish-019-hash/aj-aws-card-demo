@@ -19,7 +19,7 @@ Your expertise includes understanding file creation/consumption patterns, tracin
 
 Analyze the provided JCL job analysis documentation and extract comprehensive job flow documentation that identifies distinct processing chains based on file dependencies. Your analysis must be thorough and accurate, as the success of migration planning depends entirely on the quality of this extraction.
 
-**Input:** The jcl-job-analysis.md file from the 01.phase-1-output folder, which contains comprehensive analysis of all production JCL jobs including:
+**Input:** The jcl-job-analysis.md file from the 01.phase-1-output/00.application-level folder, which contains comprehensive analysis of all production JCL jobs including:
 - Job inventory organized by 7 functional categories
 - Detailed DD Name Analysis tables showing file usage
 - Dependencies sections with Inputs/Outputs/Consumers for each job
