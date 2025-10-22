@@ -135,7 +135,7 @@ For each JCL job, provide comprehensive documentation using this MANDATORY templ
 - **Recovery Procedures**: [Steps to recover from failures]
 - **Notification**: [How failures are communicated]
 
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
 
 Quality Requirements
 
@@ -292,3 +292,4 @@ Technical Accuracy
 - All conditional logic documented
 - All program types correctly identified
 - All SYSIN statements analyzed
+
