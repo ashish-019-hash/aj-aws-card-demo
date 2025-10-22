@@ -10,7 +10,7 @@ Analyze all code files in the attached repo and md files fromt the session to ex
 3. screen-flow.md
 4. validation-rules.md
 
-The above files will be available in the 01.phase-1-output folder of the attached github repo.
+The above files will be available in the 01.phase-1-output/00.application-level folder of the attached github repo.
 **Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT application or codebase** (e.g., CardDemo application, PayrollApp, InventorySystem, etc.), not an attempt to get a better response for the same application. Even if you are re-analyzing the same application or codebase, treat each run as an independent analysis. Always explicitly specify which application or codebase you are analyzing at the beginning of your response. Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each analysis is independent.
 
 
@@ -56,7 +56,7 @@ The above files will be available in the 01.phase-1-output folder of the attache
 
 **Business Value**: [Direct benefit to user and business impact]
 ```
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
 
 **Group stories by modules/screens when possible**
 
@@ -74,4 +74,5 @@ The output file should be added to the 01.phase-1-output folder as a PR to the a
 - **Implementation Ready**: Stories suitable for modern application development
 - **Quality Documentation**: Clear, consistent format enabling effective modernization
 
-**Delivery**: Push results to new branch in `01.phase-1-output` folder, create pull request for review.
+
+**Delivery**: Push results to new branch in `01.phase-1-output/00.application-level` folder, create pull request for review.
