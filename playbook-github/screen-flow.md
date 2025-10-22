@@ -117,7 +117,7 @@ Structure:
 
 [Repeat for each screen...]
 
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
 
 Quality Requirements
 
@@ -138,5 +138,6 @@ Readability: Non-technical users can understand the documentation
 Completeness: All user-facing screens and navigation documented
 
 Accuracy: All information verified against source code
+
 
 Simplicity: Focus on user perspective, not technical implementation
