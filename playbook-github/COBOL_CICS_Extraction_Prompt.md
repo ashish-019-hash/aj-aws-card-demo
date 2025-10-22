@@ -20,7 +20,7 @@ Analyze the provided COBOL CICS program and extract comprehensive documentation 
 
 **Input:** One COBOL CICS program file from the codebase (including any associated BMS map files, copybooks, and SQL includes if provided)
 
-**Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the COBOL program from the  00.phase-1-input folder of the attached repo.
+**Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the COBOL program from the 00.phase-1-input folder of the attached repo, preserving the subfolder structure. For example, if analyzing a program at `00.phase-1-input/app/cbl/coactupc.cbl`, maintain the same folder hierarchy in your analysis.
 
 **Important Note on Multiple Runs:** When using this prompt multiple times, each run is for analyzing a **DIFFERENT program** (e.g., COACTUPC, COACTVWC, PROG003, etc.), not an attempt to get a better response for the same program. Always explicitly specify the program name/ID you are analyzing at the beginning of your response (e.g., "Analyzing program COACTUPC..."). Use the consistent extraction format as defined in this prompt, regardless of previous runs. Each program analysis is independent.
 
@@ -174,7 +174,7 @@ For each structure, include:
 - Pseudo-conversational design (COMMAREA usage, state management)
 - Date and time handling (ASKTIME, FORMATTIME, calculations)
 
-The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo, maintaining the same folder structure as the input file. For example, if the input file is `00.phase-1-input/app/cbl/coactupc.cbl`, the output should be placed at `01.phase-1-output/app/cbl/coactupc_extract.md`.
 ---
 
 ## 5. Quality Requirements
