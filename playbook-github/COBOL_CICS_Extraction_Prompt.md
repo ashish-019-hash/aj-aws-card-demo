@@ -18,7 +18,7 @@ Your expertise includes understanding business logic embedded in COBOL code, ana
 
 Analyze the provided COBOL CICS program and extract comprehensive documentation that will serve as the foundation for migrating this program to a modern framework. Your analysis must be thorough and accurate, as the success of the migration depends entirely on the quality of this extraction.
 
-**Input:** One COBOL CICS program file from the codebase (including any associated BMS map files, copybooks, and SQL includes if provided)
+**Input:** give the cobol program name with full path
 
 **Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the COBOL program from the  00.phase-1-input folder of the attached repo.
 
@@ -174,7 +174,7 @@ For each structure, include:
 - Pseudo-conversational design (COMMAREA usage, state management)
 - Date and time handling (ASKTIME, FORMATTIME, calculations)
 
-The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+**The output file should be filename_extract.md. The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo, maintaining the same folder structure as the input file. For example, if the input file is `00.phase-1-input/app/cbl/coactupc.cbl`, the output should be placed at `01.phase-1-output/app/cbl/coactupc_extract.md`.**
 ---
 
 ## 5. Quality Requirements
