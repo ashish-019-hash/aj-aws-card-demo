@@ -232,7 +232,7 @@ For each potential business entity, validate using these universal criteria:
 - Make sure to use mermaid syntax to depict the relationships and cardinality indicators`.
 ```
 
-The output file should be added to the 01.phase-1-output folder as a PR to the attached github repo.
+The output file should be added to the 01.phase-1-output/00.application-level folder as a PR to the attached github repo.
 
 ## Universal Quality Requirements
 
