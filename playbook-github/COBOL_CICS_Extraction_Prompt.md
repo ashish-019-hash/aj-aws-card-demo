@@ -18,7 +18,7 @@ Your expertise includes understanding business logic embedded in COBOL code, ana
 
 Analyze the provided COBOL CICS program and extract comprehensive documentation that will serve as the foundation for migrating this program to a modern framework. Your analysis must be thorough and accurate, as the success of the migration depends entirely on the quality of this extraction.
 
-**Input:** 00.phase-1-input/app/cbl/COACTVWC.cbl
+**Input:** program name will be given along with the triggering promt
 
 **Goal:** Extract and document all critical information following the structured requirements outlined below, focusing only on migration-relevant details. You have to pick the COBOL program from the  00.phase-1-input folder of the attached repo.
 
